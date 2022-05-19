@@ -1,11 +1,15 @@
 package com.nnk.poseidon.domain;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.tomcat.jni.Time;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "bidlist")
 public class BidListEntity {
 
