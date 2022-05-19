@@ -14,18 +14,18 @@ public class TradeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int TradeId;
+    private Integer tradeId;
     private String account;
     private String type;
-    private double buyQuantity;
-    private double sellQuantity;
-    private double buyPrice;
-    private double sellPrice;
+    private Double buyQuantity;
+    private Double sellQuantity;
+    private Double buyPrice;
+    private Double sellPrice;
+    private String benchmark;
     private Timestamp tradeDate;
     private String security;
     private String status;
     private String trader;
-    private String benchmark;
     private String book;
     private String creationName;
     private Timestamp creationDate;

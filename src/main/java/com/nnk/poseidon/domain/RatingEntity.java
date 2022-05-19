@@ -13,9 +13,9 @@ public class RatingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Integer id;
     private String moodysRating;
     private String sandPRating;
     private String fitchRating;
-    private int orderNumber;
+    private Integer orderNumber;
 }

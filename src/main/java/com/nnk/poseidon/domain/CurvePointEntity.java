@@ -14,10 +14,10 @@ public class CurvePointEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
-    private int CurveId;
+    private Integer id;
+    private Integer curveId;
     private Timestamp asOfDate;
-    private double term;
-    private double value;
+    private Double term;
+    private Double value;
     private Timestamp creationDate;
 }
