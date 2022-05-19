@@ -17,7 +17,7 @@ public class CurvePointEntity {
     private long id;
     private int CurveId;
     private Timestamp asOfDate;
-    private double privateterm;
+    private double term;
     private double value;
     private Timestamp creationDate;
 }
