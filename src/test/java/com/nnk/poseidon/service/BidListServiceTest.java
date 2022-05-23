@@ -36,10 +36,10 @@ class BidListServiceTest {
         bidList.setBidListId(1);
         bidList.setAccount("account");
         bidList.setType("type");
-        bidList.setBidQuantity(10);
-        bidList.setAskQuantity(20);
-        bidList.setBid(1);
-        bidList.setAsk(2);
+        bidList.setBidQuantity(10d);
+        bidList.setAskQuantity(20d);
+        bidList.setBid(1d);
+        bidList.setAsk(2d);
         bidList.setBenchmark("benchmark");
         bidList.setBidListDate(new Timestamp(0));
         bidList.setCommentary("commentary");
@@ -93,10 +93,10 @@ class BidListServiceTest {
         bidList2.setBidListId(1);
         bidList2.setAccount("account2");
         bidList2.setType("type2");
-        bidList2.setBidQuantity(102);
-        bidList2.setAskQuantity(202);
-        bidList2.setBid(12);
-        bidList2.setAsk(22);
+        bidList2.setBidQuantity(102d);
+        bidList2.setAskQuantity(202d);
+        bidList2.setBid(12d);
+        bidList2.setAsk(22d);
         bidList2.setBenchmark("benchmark2");
         bidList2.setBidListDate(new Timestamp(2));
         bidList2.setCommentary("commentary2");
@@ -141,6 +141,7 @@ class BidListServiceTest {
 
     @Test
     void delete() {
+        when(bidListRepository.findById(1)).thenReturn(Optional.of(bidList));
         bidListService.delete(1);
         verify(bidListRepository,times(1)).delete(bidList);
     }
