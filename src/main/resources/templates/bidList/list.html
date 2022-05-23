@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" 
+<html xmlns="http://www.w3.org/1999/xhtml"
 	  xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="utf-8"/>
-<title>Home</title>
-<link rel="stylesheet" href="../../css/bootstrap.min.css" >
+	<meta charset="utf-8"/>
+	<title>Home</title>
+	<link rel="stylesheet" href="../../css/bootstrap.min.css" >
 </head>
 <body>
 <div class="container">
@@ -28,13 +28,13 @@
 		<a href="/bidList/add" class="btn btn-primary btn-sm">Add New</a>
 		<table class="table table-bordered">
 			<thead>
-				<tr>
-					<th>Id</th>
-					<th>Account</th>
-					<th>Type</th>
-					<th>Bid Quantity</th>
-					<th>Action</th>
-				</tr>
+			<tr>
+				<th>Id</th>
+				<th>Account</th>
+				<th>Type</th>
+				<th>Bid Quantity</th>
+				<th>Action</th>
+			</tr>
 			</thead>
 			<tbody>
 			<tr th:each="bidList : ${liste}">
@@ -43,8 +43,9 @@
 				<td th:text="${bidList.getType()}"></td>
 				<td th:text="${bidList.getBidQuantity()}"></td>
 				<td>
-					<a th:href="@{/bidList/update/{id}(id=${bidList.bidListId})}" class="btn btn-primary btn-sm">Update</a>
-					<a th:href="@{/bidList/delete/{id}(id=${bidList.bidListId})}" class="btn btn-primary btn-sm">delete</a>
+					<a th:href="@{/bidList/update/{id}(id=${bidList.bidListId})}">Edit</a>
+					|
+					<a th:href="@{/bidList/delete/{id}(id=${bidList.bidListId})}">Delete</a>
 				</td>
 			</tr>
 			</tbody>
