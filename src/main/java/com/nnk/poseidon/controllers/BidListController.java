@@ -1,7 +1,10 @@
 package com.nnk.poseidon.controllers;
 
 import com.nnk.poseidon.domain.BidListEntity;
+import com.nnk.poseidon.repositories.BidListRepository;
+import com.nnk.poseidon.service.BidListService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,16 +15,24 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 @CrossOrigin("http://localhost:4200")
 public class BidListController {
     // TODO: Inject Bid service
 
+    @Autowired
+    BidListService bidListService;
+
+    @Autowired
+    BidListRepository bidListRepository;
+
     @RequestMapping("/bidList/list")
     public String home(Model model)
     {
-        // TODO: call service find all bids to show to the view
+        List<BidListEntity> list = bidListService.findAll();
+        model.addAttribute("liste", list);
         return "bidList/list";
     }
 
@@ -38,7 +49,8 @@ public class BidListController {
 
     @GetMapping("/bidList/update/{id}")
     public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
-        // TODO: get Bid by Id and to model then show to the form
+        BidListEntity bidListEntity = bidListService.findById(id);
+        model.addAttribute("bidList", bidListEntity);
         return "bidList/update";
     }
 
@@ -51,7 +63,8 @@ public class BidListController {
 
     @GetMapping("/bidList/delete/{id}")
     public String deleteBid(@PathVariable("id") Integer id, Model model) {
-        // TODO: Find Bid by Id and delete the bid, return to Bid list
+        bidListService.delete(id);
+        // TODO: why model ?
         return "redirect:/bidList/list";
     }
 
