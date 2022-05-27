@@ -5,6 +5,7 @@ import com.nnk.poseidon.repositories.BidListRepository;
 import com.nnk.poseidon.service.BidListService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,7 +21,6 @@ import java.util.List;
 @Controller
 @CrossOrigin("http://localhost:4200")
 public class BidListController {
-    // TODO: Inject Bid service
 
     @Autowired
     BidListService bidListService;
@@ -29,9 +29,8 @@ public class BidListController {
     BidListRepository bidListRepository;
 
     @RequestMapping("/bidList/list")
-    public String home(Model model)
-    {
-        List<BidListEntity> list = bidListService.findAll();
+    public String home(Model model) {
+       List<BidListEntity> list = bidListService.findAll();
         model.addAttribute("liste", list);
         return "bidList/list";
     }
@@ -43,6 +42,12 @@ public class BidListController {
 
     @PostMapping("/bidList/validate")
     public String validate(@Valid BidListEntity bid, BindingResult result, Model model) {
+        if (!result.hasErrors()) {
+
+            bidListService.add(bid);
+            model.addAttribute("liste", bidListService.findAll());
+            return "redirect:/bidList/list";
+        }
         // TODO: check data valid and save to db, after saving return bid list
         return "bidList/add";
     }
@@ -57,14 +62,19 @@ public class BidListController {
     @PostMapping("/bidList/update/{id}")
     public String updateBid(@PathVariable("id") Integer id, @Valid BidListEntity bidList,
                             BindingResult result, Model model) {
-        // TODO: check required fields, if valid call service to update Bid and return list Bid
+        if (result.hasErrors()) {
+            return "bidList/update";
+        }
+        bidList.setBidListId(id);
+        bidListService.add(bidList);
+        model.addAttribute("liste", bidListService.findAll());
         return "redirect:/bidList/list";
     }
 
     @GetMapping("/bidList/delete/{id}")
     public String deleteBid(@PathVariable("id") Integer id, Model model) {
         bidListService.delete(id);
-        // TODO: why model ?
+        model.addAttribute("liste", bidListService.findAll());
         return "redirect:/bidList/list";
     }
 
