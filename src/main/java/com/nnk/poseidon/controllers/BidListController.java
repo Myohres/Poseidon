@@ -25,9 +25,6 @@ public class BidListController {
     @Autowired
     BidListService bidListService;
 
-    @Autowired
-    BidListRepository bidListRepository;
-
     @RequestMapping("/bidList/list")
     public String home(Model model) {
        List<BidListEntity> list = bidListService.findAll();
@@ -36,20 +33,23 @@ public class BidListController {
     }
 
     @GetMapping("/bidList/add")
-    public String addBidForm(BidListEntity bid) {
+    public String addBidForm(BidListEntity bid, Model model) {
+        model.addAttribute("bidList", bid);
         return "bidList/add";
     }
 
     @PostMapping("/bidList/validate")
     public String validate(@Valid BidListEntity bid, BindingResult result, Model model) {
-        if (!result.hasErrors()) {
+        if (result.hasErrors()) {
+           model.addAttribute("bidList", bid);
+            //TODO display errors
+            return "bidList/add";
 
-            bidListService.add(bid);
-            model.addAttribute("liste", bidListService.findAll());
-            return "redirect:/bidList/list";
         }
-        // TODO: check data valid and save to db, after saving return bid list
-        return "bidList/add";
+        bidListService.add(bid);
+        model.addAttribute("liste", bidListService.findAll());
+        return "redirect:/bidList/list";
+
     }
 
     @GetMapping("/bidList/update/{id}")
