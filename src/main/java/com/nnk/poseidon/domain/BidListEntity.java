@@ -5,6 +5,9 @@ import lombok.Setter;
 import org.apache.tomcat.jni.Time;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
 @Entity
@@ -16,7 +19,11 @@ public class BidListEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer bidListId;
+    @NotEmpty(message = "Account is mandatory")
+    @NotBlank(message = "Account is mandatory")
     private String account;
+    @NotEmpty(message = "Type is mandatory")
+    @NotBlank(message = "Type is mandatory")
     private String type;
     private Double bidQuantity;
     private Double askQuantity;
