@@ -11,6 +11,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -63,6 +65,9 @@ class BidListServiceTest {
 
     @Test
     void findAll() {
+        when(bidListRepository.findAll()).thenReturn(new ArrayList<BidListEntity>());
+        List<BidListEntity> bidListEntityList = bidListService.findAll();
+        verify(bidListRepository,times(1)).findAll();
     }
 
     @Test
@@ -94,24 +99,6 @@ class BidListServiceTest {
         bidList2.setAccount("account2");
         bidList2.setType("type2");
         bidList2.setBidQuantity(102d);
-        bidList2.setAskQuantity(202d);
-        bidList2.setBid(12d);
-        bidList2.setAsk(22d);
-        bidList2.setBenchmark("benchmark2");
-        bidList2.setBidListDate(new Timestamp(2));
-        bidList2.setCommentary("commentary2");
-        bidList2.setSecurity("security2");
-        bidList2.setStatus("status2");
-        bidList2.setTrader("trader2");
-        bidList2.setBook("book2");
-        bidList2.setCreationName("CreationName2");
-        bidList2.setCreationDate(new Timestamp(2));
-        bidList2.setRevisionName("revisionName");
-        bidList2.setRevisionDate(new Timestamp(2));
-        bidList2.setDealName("dealName2");
-        bidList2.setDealType("dealType2");
-        bidList2.setSourceListId("sourceListId2");
-        bidList2.setSide("Side2");
 
         bidListService.update(bidList2);
 
@@ -119,24 +106,25 @@ class BidListServiceTest {
         assertEquals("account2",bidList.getAccount());
         assertEquals("type2",bidList.getType());
         assertEquals(102,bidList.getBidQuantity());
-        assertEquals(202,bidList.getAskQuantity());
-        assertEquals(12,bidList.getBid());
-        assertEquals(22,bidList.getAsk());
-        assertEquals("benchmark2",bidList.getBenchmark());
-        assertEquals(2,bidList.getBidListDate().getTime());
-        assertEquals("commentary2",bidList.getCommentary());
-        assertEquals("security2",bidList.getSecurity());
-        assertEquals("status2",bidList.getStatus());
-        assertEquals("trader2",bidList.getTrader());
-        assertEquals("book2",bidList.getBook());
-        assertEquals("CreationName2",bidList2.getCreationName());
-        assertEquals(2,bidList.getCreationDate().getTime());
+
+        assertEquals(20,bidList.getAskQuantity());
+        assertEquals(1,bidList.getBid());
+        assertEquals(2,bidList.getAsk());
+        assertEquals("benchmark",bidList.getBenchmark());
+        assertEquals(0,bidList.getBidListDate().getTime());
+        assertEquals("commentary",bidList.getCommentary());
+        assertEquals("security",bidList.getSecurity());
+        assertEquals("status",bidList.getStatus());
+        assertEquals("trader",bidList.getTrader());
+        assertEquals("book",bidList.getBook());
+        assertEquals("CreationName",bidList.getCreationName());
+        assertEquals(0,bidList.getCreationDate().getTime());
         assertEquals("revisionName",bidList.getRevisionName());
-        assertEquals(2,bidList.getRevisionDate().getTime());
-        assertEquals("dealName2",bidList.getDealName());
-        assertEquals("dealType2",bidList.getDealType());
-        assertEquals("sourceListId2",bidList.getSourceListId());
-        assertEquals("Side2",bidList.getSide());
+        assertEquals(0,bidList.getRevisionDate().getTime());
+        assertEquals("dealName",bidList.getDealName());
+        assertEquals("dealType",bidList.getDealType());
+        assertEquals("sourceListId",bidList.getSourceListId());
+        assertEquals("Side",bidList.getSide());
     }
 
     @Test
