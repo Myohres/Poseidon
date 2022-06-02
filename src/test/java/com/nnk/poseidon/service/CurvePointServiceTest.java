@@ -48,7 +48,7 @@ class CurvePointServiceTest {
 
     @Test
     void findAll() {
-        when(curvePointRepository.findAll()).thenReturn(new ArrayList<CurvePointEntity>());
+        when(curvePointRepository.findAll()).thenReturn(new ArrayList<>());
         curvePointService.findAll();
         verify(curvePointRepository,times(1)).findAll();
     }
@@ -77,6 +77,7 @@ class CurvePointServiceTest {
     void update() {
         when(curvePointRepository.findById(1)).thenReturn(Optional.of(curvePoint));
         CurvePointEntity curvePoint2 = new CurvePointEntity();
+        curvePoint2.setId(1);
         curvePoint2.setCurveId(1);
         curvePoint2.setTerm(2.0);
         curvePoint2.setValue(2.0);
