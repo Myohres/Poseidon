@@ -48,7 +48,7 @@ public class CurvePointService {
      * @return curvePoint updated
      */
     public CurvePointEntity update(final CurvePointEntity newCurvePoint) {
-        CurvePointEntity oldCurvePoint = findById(newCurvePoint.getCurveId());
+        CurvePointEntity oldCurvePoint = findById(newCurvePoint.getId());
         oldCurvePoint.setCurveId(newCurvePoint.getCurveId());
         oldCurvePoint.setTerm(newCurvePoint.getTerm());
         oldCurvePoint.setValue(newCurvePoint.getValue());
