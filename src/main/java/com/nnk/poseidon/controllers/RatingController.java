@@ -45,8 +45,7 @@ public class RatingController {
      */
     @GetMapping("/rating/add")
     public String addRatingForm(final RatingEntity rating, final Model model) {
-
-        model.addAttribute("ratting", rating);
+        model.addAttribute("rating", rating);
         return "rating/add";
     }
 
@@ -61,10 +60,9 @@ public class RatingController {
     public String validate(@Valid final RatingEntity rating,
                            final BindingResult result, final Model model) {
         if (result.hasErrors()) {
-            model.addAttribute("bidList", rating);
+            model.addAttribute("rating", rating);
             //TODO display errors
             return "rating/add";
-
         }
         ratingService.add(rating);
         model.addAttribute("list", ratingService.findAll());
