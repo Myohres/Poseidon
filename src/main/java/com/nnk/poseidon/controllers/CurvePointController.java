@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
 
@@ -17,8 +19,11 @@ import javax.validation.Valid;
 @CrossOrigin("http://localhost:4200")
 public class CurvePointController {
 
+    /**
+     * CurvePoint service layer.
+     */
     @Autowired
-    CurvePointService curvePointService;
+    private CurvePointService curvePointService;
 
     /**
      * Show all curePoint.
@@ -26,8 +31,7 @@ public class CurvePointController {
      * @return curvePoint list page
      */
     @RequestMapping("/curvePoint/list")
-    public String home(Model model)
-    {
+    public String home(final Model model) {
         model.addAttribute("list", curvePointService.findAll());
         return "curvePoint/list";
     }
@@ -39,7 +43,8 @@ public class CurvePointController {
      * @return curvePoint adding page
      */
     @GetMapping("/curvePoint/add")
-    public String addCurvePointForm(CurvePointEntity curve, Model model) {
+    public String addCurvePointForm(final CurvePointEntity curve,
+                                    final Model model) {
         model.addAttribute("curvePoint", curve);
         return "curvePoint/add";
     }
@@ -52,7 +57,8 @@ public class CurvePointController {
      * @return curvePoint adding page
      */
     @PostMapping("/curvePoint/validate")
-    public String validate(@Valid CurvePointEntity curvePoint, BindingResult result, Model model) {
+    public String validate(@Valid final CurvePointEntity curvePoint,
+                           final BindingResult result, final Model model) {
         if (result.hasErrors()) {
             model.addAttribute("curvePoint", curvePoint);
             //TODO display errors
@@ -71,14 +77,15 @@ public class CurvePointController {
      * @return curvePoint updating page
      */
     @GetMapping("/curvePoint/update/{id}")
-    public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
+    public String showUpdateForm(@PathVariable("id") final Integer id,
+                                 final Model model) {
         CurvePointEntity curvePointEntity = curvePointService.findById(id);
         model.addAttribute("curvePoint", curvePointEntity);
         return "curvePoint/update";
     }
 
     /**
-     * updating curvePoint page
+     * updating curvePoint page.
      * @param id curvePoint id
      * @param curvePoint curvePoint to update
      * @param result binding
@@ -86,8 +93,9 @@ public class CurvePointController {
      * @return curvePoint list page
      */
     @PostMapping("/curvePoint/update/{id}")
-    public String updateBid(@PathVariable("id") Integer id, @Valid CurvePointEntity curvePoint,
-                            BindingResult result, Model model) {
+    public String updateCurvePoint(@PathVariable("id") final Integer id,
+                            @Valid final CurvePointEntity curvePoint,
+                            final BindingResult result, final Model model) {
         if (result.hasErrors()) {
             return "curvePoint/update";
         }
@@ -98,13 +106,14 @@ public class CurvePointController {
     }
 
     /**
-     * Deleting curvePoint
+     * Deleting curvePoint.
      * @param id curvePoint id
      * @param model list curvePoint
      * @return curvePoint list page
      */
     @GetMapping("/curvePoint/delete/{id}")
-    public String deleteBid(@PathVariable("id") Integer id, Model model) {
+    public String deleteCurvePoint(@PathVariable("id") final Integer id,
+                            final Model model) {
         curvePointService.delete(id);
         model.addAttribute("liste", curvePointService.findAll());
         return "redirect:/curvePoint/list";
