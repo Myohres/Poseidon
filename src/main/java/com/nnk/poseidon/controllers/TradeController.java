@@ -79,7 +79,7 @@ public class TradeController {
     public String showUpdateForm(@PathVariable("id") final Integer id,
                                  final Model model) {
         TradeEntity tradeEntity = tradeService.findById(id);
-        model.addAttribute("curvePoint", tradeEntity);
+        model.addAttribute("trade", tradeEntity);
         return "trade/update";
     }
 
