@@ -66,7 +66,7 @@ class BidListServiceTest {
     @Test
     void findAll() {
         when(bidListRepository.findAll()).thenReturn(new ArrayList<BidListEntity>());
-        List<BidListEntity> bidListEntityList = bidListService.findAll();
+        bidListService.findAll();
         verify(bidListRepository,times(1)).findAll();
     }
 

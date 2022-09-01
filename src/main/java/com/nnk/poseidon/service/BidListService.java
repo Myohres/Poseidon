@@ -14,11 +14,12 @@ public class BidListService {
     @Autowired
     private BidListRepository bidListRepository;
 
-    public List<BidListEntity> findAll() {
+    public Iterable<BidListEntity> findAll() {
         return bidListRepository.findAll();
     }
 
     public BidListEntity findById(Integer id) {
+
       return  bidListRepository.findById(id).orElseThrow(()
               -> new NoSuchElementException("No BidList found with id : " + id));
     }
