@@ -2,19 +2,19 @@ package com.nnk.poseidon.controllers;
 
 import com.nnk.poseidon.domain.CurvePointEntity;
 import com.nnk.poseidon.service.CurvePointService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.NoSuchElementException;
 
-
+@Slf4j
 @Controller
 @CrossOrigin("http://localhost:4200")
 public class CurvePointController {
@@ -38,36 +38,30 @@ public class CurvePointController {
 
     /**
      * Go to adding CurvePoint page.
-     * @param curve CurvePoint to add
-     * @param model curvePoint to pass
+     * @param curvePointEntity CurvePoint to add
      * @return curvePoint adding page
      */
     @GetMapping("/curvePoint/add")
-    public String addCurvePointForm(final CurvePointEntity curve,
-                                    final Model model) {
-        model.addAttribute("curvePoint", curve);
+    public String addCurvePointForm(final CurvePointEntity curvePointEntity) {
         return "curvePoint/add";
     }
 
     /**
      * Validate fields curvePoint before adding.
-     * @param curvePoint curvePoint to add
+     * @param curve curvePoint to add
      * @param result binding
      * @param model curvePoint to pass
      * @return curvePoint adding page
      */
     @PostMapping("/curvePoint/validate")
-    public String validate(@Valid final CurvePointEntity curvePoint,
+    public String validate(@Valid final CurvePointEntity curve,
                            final BindingResult result, final Model model) {
         if (result.hasErrors()) {
-            model.addAttribute("curvePoint", curvePoint);
-            //TODO display errors
             return "curvePoint/add";
-
         }
-        curvePointService.add(curvePoint);
-        model.addAttribute("liste", curvePointService.findAll());
-        return "curvePoint/add";
+        curvePointService.add(curve);
+        model.addAttribute("list", curvePointService.findAll());
+        return "redirect:/curvePoint/list";
     }
 
     /**
@@ -79,8 +73,14 @@ public class CurvePointController {
     @GetMapping("/curvePoint/update/{id}")
     public String showUpdateForm(@PathVariable("id") final Integer id,
                                  final Model model) {
-        CurvePointEntity curvePointEntity = curvePointService.findById(id);
-        model.addAttribute("curvePoint", curvePointEntity);
+        try {
+            CurvePointEntity curvePointEntity = curvePointService.findById(id);
+            model.addAttribute("curvePointEntity", curvePointEntity);
+        } catch (NoSuchElementException e) {
+            e.printStackTrace();
+            model.addAttribute("List", curvePointService.findAll());
+            return "redirect:/curvePoint/list";
+        }
         return "curvePoint/update";
     }
 
@@ -101,7 +101,7 @@ public class CurvePointController {
         }
         curvePoint.setId(id);
         curvePointService.update(curvePoint);
-        model.addAttribute("liste", curvePointService.findAll());
+        model.addAttribute("list", curvePointService.findAll());
         return "redirect:/curvePoint/list";
     }
 
@@ -115,7 +115,83 @@ public class CurvePointController {
     public String deleteCurvePoint(@PathVariable("id") final Integer id,
                             final Model model) {
         curvePointService.delete(id);
-        model.addAttribute("liste", curvePointService.findAll());
+        model.addAttribute("list", curvePointService.findAll());
         return "redirect:/curvePoint/list";
+    }
+
+    /**
+     * Get all curvePoint.
+     * @return curvePoint list
+     */
+    @GetMapping("/curvePoint")
+    public ResponseEntity<List<CurvePointEntity>> getAllCurvePoint() {
+        log.info("GET/curvePoint");
+        return ResponseEntity.ok(curvePointService.findAll());
+    }
+
+    /**
+     * Get curvePoint by id.
+     * @param curvePointId id curvePoint
+     * @return curvePoint
+     */
+    @GetMapping("/curvePoint/curvePointId/{id}")
+    public ResponseEntity<CurvePointEntity> getCurvePointyId(@PathVariable("id") final Integer curvePointId) {
+        log.info("GET/curvePoint/curvePointId/" + curvePointId);
+        try {
+            return ResponseEntity.ok(curvePointService.findById(curvePointId));
+        } catch (NoSuchElementException e) {
+            log.error("GetCurvePointById error : " + e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Add a curvePoint.
+     * @param curvePointEntity curvePoint
+     * @return curvePoint added
+     */
+    @PostMapping("/curvePoint/add")
+    public ResponseEntity<CurvePointEntity> addCurvePoint(@RequestBody final CurvePointEntity curvePointEntity) {
+        log.info("POST/curvePoint/add");
+        try {
+            return ResponseEntity.ok(curvePointService.add(curvePointEntity));
+        } catch (NoSuchElementException e) {
+            log.error("addCurvePoint error : " + e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Update curvePoint.
+     * @param curvePointEntity curvePoint new information
+     * @return curvePoint updated
+     */
+    @PutMapping("/curvePoint")
+    public ResponseEntity<CurvePointEntity> updateCurvePoint(
+            @RequestBody CurvePointEntity curvePointEntity) {
+        log.info("PUT/curvePoint/curvePointId/ " + curvePointEntity.getCurveId());
+        try {
+            return ResponseEntity.ok(curvePointService.update(curvePointEntity));
+        } catch (NoSuchElementException e) {
+            log.error("UpdateCurvePoint error : " + e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Delete a curvePoint by his id.
+     * @param curvePointId id curvePoint
+     * @return curvePoint deleted
+     */
+    @DeleteMapping("/curvePoint/curvePointId/{id}")
+    public ResponseEntity<?> deleteCurvePoint(@PathVariable("id") final Integer curvePointId) {
+        log.info("DEL/curvePoint/curvePointId/" + curvePointId);
+        try {
+            curvePointService.delete(curvePointId);
+            return ResponseEntity.ok().build();
+        } catch (NoSuchElementException e) {
+            log.error("DeleteCurvePoint error " + e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
     }
 }

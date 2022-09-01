@@ -14,25 +14,25 @@
 	</div>
 
 	<div class="row">
-		<form action="#" th:action="@{/curvePoint/validate}" th:object="${curvePoint}" method="post" class="form-horizontal" style="width: 100%">
+		<form action="#" th:action="@{/curvePoint/validate}" th:object="${curvePointEntity}" method="post" class="form-horizontal" style="width: 100%">
 			<div class="form-group">
 				<label for="curveId" class="col-sm-2 control-label">curveId</label>
 				<div class="col-sm-10">
-					<input type="text" th:field="*{curveId}" id="curveId" placeholder="curveId" class="col-4">
+					<input type="number" th:field="*{curveId}" id="curveId" required placeholder="curveId" class="col-4">
 					<p class="text-danger" th:if="${#fields.hasErrors('curveId')}" th:errors="*{curveId}"></p>
 				</div>
 			</div>
 			<div class="form-group">
 				<label for="term" class="col-sm-2 control-label">Term</label>
 				<div class="col-sm-10">
-					<input type="text" th:field="*{term}" id="term" placeholder="Term" class="col-4">
+					<input type="number" th:field="*{term}" id="term" required placeholder="Term" class="col-4">
 					<p class="text-danger" th:if="${#fields.hasErrors('term')}" th:errors="*{term}"></p>
 				</div>
 			</div>
 			<div class="form-group">
 				<label for="value" class="col-sm-2 control-label">Value</label>
 				<div class="col-sm-10">
-					<input type="number" th:field="*{value}" id="value" placeholder="Value" class="col-4">
+					<input type="number" th:field="*{value}" id="value" required placeholder="Value" class="col-4">
 					<p class="text-danger" th:if="${#fields.hasErrors('value')}" th:errors="*{value}"></p>
 				</div>
 			</div>
