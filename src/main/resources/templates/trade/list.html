@@ -37,15 +37,15 @@
 				</tr>
 			</thead>
 			<tbody>
-			<tr th:each="trade : ${list}">
-				<td th:text="${trade.getTradeId()}"></td>
-				<td th:text="${trade.getAccount()}"></td>
-				<td th:text="${trade.getType()}"></td>
-				<td th:text="${trade.getBuyQuantity()}"></td>
+			<tr th:each="tradeEntity : ${list}">
+				<td th:text="${tradeEntity.getTradeId()}"></td>
+				<td th:text="${tradeEntity.getAccount()}"></td>
+				<td th:text="${tradeEntity.getType()}"></td>
+				<td th:text="${tradeEntity.getBuyQuantity()}"></td>
 				<td>
-					<a th:href="@{/trade/update/{id}(id=${trade.tradeId})}">Edit</a>
+					<a th:href="@{/trade/update/{id}(id=${tradeEntity.tradeId})}">Edit</a>
 					|
-					<a th:href="@{/trade/delete/{id}(id=${trade.tradeId})}">Delete</a>
+					<a th:href="@{/trade/delete/{id}(id=${tradeEntity.tradeId})}">Delete</a>
 				</td>
 			</tr>
 			</tbody>

@@ -1,25 +1,38 @@
 package com.nnk.poseidon.controllers;
 
-import com.nnk.poseidon.domain.CurvePointEntity;
 import com.nnk.poseidon.domain.TradeEntity;
 import com.nnk.poseidon.service.TradeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = TradeController.class)
-@AutoConfigureMockMvc(addFilters = false)
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
 class TradeControllerTest {
 
     @Autowired
@@ -28,68 +41,179 @@ class TradeControllerTest {
     @MockBean
     private TradeService tradeService;
 
-    TradeEntity tradeEntity;
+    TradeEntity trade;
 
     @BeforeEach
     void setUp() {
-        tradeEntity = new TradeEntity();
-        tradeEntity.setTradeId(1);
-        tradeEntity.setAccount("account");
-        tradeEntity.setType("type");
-        tradeEntity.setBuyQuantity(1.0);
-        tradeEntity.setSellQuantity(1.0);
-        tradeEntity.setBuyPrice(1.0);
-        tradeEntity.setSellPrice(1.0);
-        tradeEntity.setBenchmark("benchmark");
-        tradeEntity.setSecurity("security");
-        tradeEntity.setStatus("status");
-        tradeEntity.setTrader("trader");
-        tradeEntity.setBook("book");
-        tradeEntity.setCreationName("CreationName");
-        tradeEntity.setCreationDate(new Timestamp(0));
-        tradeEntity.setRevisionName("revisionName");
-        tradeEntity.setRevisionDate(new Timestamp(0));
-        tradeEntity.setDealName("dealName");
-        tradeEntity.setDealType("dealType");
-        tradeEntity.setSourceListId("sourceListId");
-        tradeEntity.setSide("Side");
+        trade = new TradeEntity();
+        trade.setTradeId(1);
+        trade.setAccount("account");
+        trade.setType("type");
+        trade.setBuyQuantity(1.0);
+        trade.setSellQuantity(1.0);
+        trade.setBuyPrice(1.0);
+        trade.setSellPrice(1.0);
+        trade.setBenchmark("benchmark");
+        trade.setSecurity("security");
+        trade.setStatus("status");
+        trade.setTrader("trader");
+        trade.setBook("book");
+        trade.setCreationName("CreationName");
+        trade.setCreationDate(new Timestamp(0));
+        trade.setRevisionName("revisionName");
+        trade.setRevisionDate(new Timestamp(0));
+        trade.setDealName("dealName");
+        trade.setDealType("dealType");
+        trade.setSourceListId("sourceListId");
+        trade.setSide("Side");
     }
 
     @Test
     void home() throws Exception {
-        when(tradeService.findAll()).thenReturn(new ArrayList<>());
-        mockMvc.perform(get("/trade/list")).andExpect(status().isOk());
+        mockMvc.perform(get("/trade/list"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("trade/list"))
+                .andExpect(model().attributeExists("list"));
     }
 
     @Test
     void addTradeForm() throws Exception {
-        when(tradeService.add(new TradeEntity())).thenReturn(new TradeEntity());
-        mockMvc.perform(get("/trade/add")).andExpect(status().isOk());
+        mockMvc.perform(get("/trade/add"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("trade/add"));
     }
 
     @Test
-    void validate() {
+    void validate() throws Exception {
+        mockMvc.perform(post("/trade/validate")
+                .param("account","aa")
+                .param("type", "tt")
+                .param("buyQuantity", "1d"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(header().string("Location", "/trade/list"));
     }
 
     @Test
-    void validateWithError() {
+    void validateWithError() throws Exception {
+        mockMvc.perform(post("/trade/validate")
+                .param("account","")
+                .param("type", "")
+                .param("buyQuantity", " j"))
+                .andExpect(view().name("trade/add"));
     }
 
     @Test
     void showUpdateForm() throws Exception {
-        when(tradeService.findById(1)).thenReturn(tradeEntity);
-        mockMvc.perform(get("/trade/update/1")).andExpect(status().isOk());
+        when(tradeService.findById(1)).thenReturn(trade);
+        mockMvc.perform(get("/trade/update/1"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("tradeEntity"))
+                .andExpect(view().name("trade/update"));
     }
 
     @Test
-    void updateCurvePoint() {
+    void showUpdateFormWithNoTradeFound() throws Exception {
+        doThrow(new NoSuchElementException()).when(tradeService).findById(any());
+        mockMvc.perform(get("/trade/update/1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(header().string("Location", "/trade/list"));
     }
 
     @Test
-    void updateBidWithNoError() throws Exception {
+    void updateCurvePoint() throws Exception {
+        when((tradeService.add(trade))).thenReturn(trade);
+        mockMvc.perform(post("/trade/update/1")
+                .param("account","aa")
+                .param("type", "tt")
+                .param("buyQuantity", "1d"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(header().string("Location", "/trade/list"));
     }
 
     @Test
-    void deleteTrade() {
+    void updateBidWithError() throws Exception {
+      /*  mockMvc.perform(post("/trade/update/1")
+                .param("account"," ")
+                .param("type", "tt")
+                .param("buyQuantity", ""))
+                .andExpect(view().name("trade/update"));*/
     }
+
+    @Test
+    void deleteTrade() throws Exception {
+        when(tradeService.findById(any())).thenReturn(trade);
+        when(tradeService.findAll()).thenReturn(new ArrayList<>());
+        mockMvc.perform(get("/trade/delete/13"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(header().string("Location", "/trade/list"));
+    }
+
+    @Test
+    void getAllTrade() throws Exception {
+        when(tradeService.findAll()).thenReturn(new ArrayList<>());
+        mockMvc.perform(get("/trade"))
+                .andExpect(status().isOk());
+    }
+
+
+    @Test
+    void getTradeById() throws Exception {
+        when(tradeService.findById(any())).thenReturn(trade);
+        mockMvc.perform(get("/trade/tradeId/1"))
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    void getTradeByIdNotFound() throws Exception {
+        when(tradeService.findById(any())).thenThrow(new NoSuchElementException());
+        mockMvc.perform(get("/trade/tradeId/1"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void addTrade() throws Exception {
+        mockMvc.perform(post("/trade/add")
+                .contentType(MediaType.APPLICATION_JSON).content("{}"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void addTradeNotFound() throws Exception {
+        when(tradeService.add(any())).thenThrow(new NoSuchElementException());
+        mockMvc.perform(post("/trade/add")
+                .contentType(MediaType.APPLICATION_JSON).content("{}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void updateTrade() throws Exception {
+        when(tradeService.update(any())).thenReturn(trade);
+        mockMvc.perform(put("/trade")
+                .contentType(MediaType.APPLICATION_JSON).content("{}"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void updateTradeNotFound() throws Exception {
+        when(tradeService.update(any())).thenThrow(new NoSuchElementException());
+        mockMvc.perform(put("/trade")
+                .contentType(MediaType.APPLICATION_JSON).content("{}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testDeleteTrade() throws Exception {
+        when(tradeService.findById(any())).thenReturn(trade);
+       mockMvc.perform(delete("/trade/tradeId/1"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testDeleteTradeNotFound() throws Exception {
+        doThrow(new NoSuchElementException()).when(tradeService).delete(1);
+        mockMvc.perform(delete("/trade/tradeId/1"))
+                .andExpect(status().isNotFound());
+    }
+
 }
