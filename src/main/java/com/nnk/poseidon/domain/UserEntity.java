@@ -1,5 +1,6 @@
 package com.nnk.poseidon.domain;
 
+
 import lombok.Getter;
 import lombok.Setter;
 
