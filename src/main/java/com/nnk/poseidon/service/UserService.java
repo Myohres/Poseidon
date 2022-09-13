@@ -6,6 +6,11 @@ import com.nnk.poseidon.repositories.BidListRepository;
 import com.nnk.poseidon.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,18 +19,18 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
-public class UserService /*implements UserDetailsService*/ {
+public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
 
-  /*  @Override
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity userEntity = userRepository.findUserEntityByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("No user with : " +username));
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(userEntity.getRole());
         return new User(userEntity.getUsername(),userEntity.getPassword(), Collections.singletonList(simpleGrantedAuthority));
-    }*/
+    }
 
     public List<UserEntity> findAll() {
         return userRepository.findAll();

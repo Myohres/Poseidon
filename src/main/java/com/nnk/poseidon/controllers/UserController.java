@@ -5,6 +5,7 @@ import com.nnk.poseidon.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
@@ -58,8 +59,8 @@ public class UserController {
     public String validate(@Valid final UserEntity user,
                           final BindingResult result, final Model model) {
         if (!result.hasErrors()) {
-         /*   BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-            user.setPassword(encoder.encode(user.getPassword()));*/
+           BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            user.setPassword(encoder.encode(user.getPassword()));
             userService.save(user);
             model.addAttribute("users", userService.findAll());
             return "redirect:/user/list";
@@ -103,8 +104,8 @@ public class UserController {
         if (result.hasErrors()) {
             return "user/update";
         }
-       /* BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        user.setPassword(encoder.encode(user.getPassword()));*/
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        user.setPassword(encoder.encode(user.getPassword()));
         user.setId(id);
         userService.save(user);
         model.addAttribute("users", userService.findAll());
