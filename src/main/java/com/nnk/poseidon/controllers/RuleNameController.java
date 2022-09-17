@@ -97,7 +97,7 @@ public class RuleNameController {
                                  @Valid final RuleNameEntity ruleName,
                                  final BindingResult result, final Model model) {
         if (result.hasErrors()) {
-            return "redirect:/ruleName/list";
+            return "ruleName/update";
         }
         ruleName.setId(id);
         ruleNameService.update(ruleName);

@@ -75,7 +75,7 @@ public class RatingController {
                                  final Model model) {
         try {
             RatingEntity ratingEntity = ratingService.findById(id);
-            model.addAttribute("rating", ratingEntity);
+            model.addAttribute("ratingEntity", ratingEntity);
         } catch (NoSuchElementException e) {
             e.printStackTrace();
             model.addAttribute("list", ratingService.findAll());
