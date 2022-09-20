@@ -6,7 +6,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 
@@ -135,7 +142,8 @@ public class TradeController {
      * @return trade
      */
     @GetMapping("/trade/tradeId/{id}")
-    public ResponseEntity<TradeEntity> getTradeById(@PathVariable("id") final Integer tradeId) {
+    public ResponseEntity<TradeEntity> getTradeById(
+            @PathVariable("id") final Integer tradeId) {
         log.info("GET/trade/tradeId/" + tradeId);
         try {
             return ResponseEntity.ok(tradeService.findById(tradeId));
@@ -151,7 +159,8 @@ public class TradeController {
      * @return trade added
      */
     @PostMapping("/trade/add")
-    public ResponseEntity<TradeEntity> addTrade(@RequestBody final TradeEntity tradeEntity) {
+    public ResponseEntity<TradeEntity> addTrade(
+            @RequestBody final TradeEntity tradeEntity) {
         log.info("POST/trade/add");
         try {
             return ResponseEntity.ok(tradeService.add(tradeEntity));
@@ -168,7 +177,7 @@ public class TradeController {
      */
     @PutMapping("/trade")
     public ResponseEntity<TradeEntity> updatetrade(
-            @RequestBody TradeEntity tradeEntity) {
+            @RequestBody final TradeEntity tradeEntity) {
         log.info("PUT/trade/tradeId/ " + tradeEntity.getTradeId());
         try {
             return ResponseEntity.ok(tradeService.update(tradeEntity));
@@ -184,7 +193,8 @@ public class TradeController {
      * @return trade deleted
      */
     @DeleteMapping("/trade/tradeId/{id}")
-    public ResponseEntity<?> deleteTrade(@PathVariable("id") final Integer tradeId) {
+    public ResponseEntity<?> deleteTrade(
+            @PathVariable("id") final Integer tradeId) {
         log.info("DEL/trade/tradeId/" + tradeId);
         try {
             tradeService.delete(tradeId);

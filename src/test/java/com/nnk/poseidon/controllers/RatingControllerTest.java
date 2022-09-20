@@ -86,12 +86,12 @@ class RatingControllerTest {
 
     @Test
     void validateWithError() throws Exception {
-       /* mockMvc.perform(post("/rating/validate")
-                .param("moodysRating","mm")
-                .param("sandPRating", "ss")
-                .param("fitchRating", "ff")
-                .param("orderNumber","1"))
-                .andExpect(view().name("rating/add"));*/
+        mockMvc.perform(post("/rating/validate")
+                .param("moodysRating","1")
+                .param("sandPRating", "")
+                .param("fitchRating", "")
+                .param("orderNumber",""))
+                .andExpect(view().name("rating/add"));
     }
 
     @Test
@@ -99,7 +99,7 @@ class RatingControllerTest {
         when(ratingService.findById(1)).thenReturn(rating);
         mockMvc.perform(get("/rating/update/1"))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("rating"))
+                .andExpect(model().attributeExists("ratingEntity"))
                 .andExpect(view().name("rating/update"));
     }
 
@@ -113,7 +113,6 @@ class RatingControllerTest {
 
     @Test
     void updateRating() throws Exception {
-        when((ratingService.add(rating))).thenReturn(rating);
         mockMvc.perform(post("/rating/update/1")
                 .param("moodysRating","mm")
                 .param("sandPRating", "ss")
@@ -125,12 +124,12 @@ class RatingControllerTest {
 
     @Test
     void updateRatingWithError() throws Exception {
-       /* mockMvc.perform(post("/rating/update/1")
-                .param("moodysRating"," ")
+        mockMvc.perform(post("/rating/update/1")
+                .param("moodysRating","")
                 .param("sandPRating", "ss")
                 .param("fitchRating", "ff")
                 .param("orderNumber","1"))
-                .andExpect(view().name("rating/update"));*/
+                .andExpect(view().name("rating/update"));
     }
 
     @Test

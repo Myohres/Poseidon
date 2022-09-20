@@ -6,7 +6,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 
@@ -135,7 +142,8 @@ public class CurvePointController {
      * @return curvePoint
      */
     @GetMapping("/curvePoint/curvePointId/{id}")
-    public ResponseEntity<CurvePointEntity> getCurvePointyId(@PathVariable("id") final Integer curvePointId) {
+    public ResponseEntity<CurvePointEntity> getCurvePointyId(
+            @PathVariable("id") final Integer curvePointId) {
         log.info("GET/curvePoint/curvePointId/" + curvePointId);
         try {
             return ResponseEntity.ok(curvePointService.findById(curvePointId));
@@ -151,7 +159,8 @@ public class CurvePointController {
      * @return curvePoint added
      */
     @PostMapping("/curvePoint/add")
-    public ResponseEntity<CurvePointEntity> addCurvePoint(@RequestBody final CurvePointEntity curvePointEntity) {
+    public ResponseEntity<CurvePointEntity> addCurvePoint(
+            @RequestBody final CurvePointEntity curvePointEntity) {
         log.info("POST/curvePoint/add");
         try {
             return ResponseEntity.ok(curvePointService.add(curvePointEntity));
@@ -168,10 +177,12 @@ public class CurvePointController {
      */
     @PutMapping("/curvePoint")
     public ResponseEntity<CurvePointEntity> updateCurvePoint(
-            @RequestBody CurvePointEntity curvePointEntity) {
-        log.info("PUT/curvePoint/curvePointId/ " + curvePointEntity.getCurveId());
+            @RequestBody final CurvePointEntity curvePointEntity) {
+        log.info("PUT/curvePoint/curvePointId/ "
+                + curvePointEntity.getCurveId());
         try {
-            return ResponseEntity.ok(curvePointService.update(curvePointEntity));
+            return ResponseEntity.ok(
+                    curvePointService.update(curvePointEntity));
         } catch (NoSuchElementException e) {
             log.error("UpdateCurvePoint error : " + e.getMessage());
             return ResponseEntity.notFound().build();
@@ -184,7 +195,8 @@ public class CurvePointController {
      * @return curvePoint deleted
      */
     @DeleteMapping("/curvePoint/curvePointId/{id}")
-    public ResponseEntity<?> deleteCurvePoint(@PathVariable("id") final Integer curvePointId) {
+    public ResponseEntity<?> deleteCurvePoint(
+            @PathVariable("id") final Integer curvePointId) {
         log.info("DEL/curvePoint/curvePointId/" + curvePointId);
         try {
             curvePointService.delete(curvePointId);

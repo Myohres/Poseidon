@@ -5,38 +5,64 @@ import com.nnk.poseidon.repositories.BidListRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
 public class BidListService {
-
+    /**
+     * BidList repository layer.
+     */
     @Autowired
     private BidListRepository bidListRepository;
 
+    /**
+     * Get all BidList.
+     * @return List of all BidList
+     */
     public Iterable<BidListEntity> findAll() {
         return bidListRepository.findAll();
     }
 
-    public BidListEntity findById(Integer id) {
+    /**
+     * Get bidList by id.
+     * @param id bidList id
+     * @return bidList entity
+     */
+    public BidListEntity findById(final Integer id) {
 
       return  bidListRepository.findById(id).orElseThrow(()
-              -> new NoSuchElementException("No BidList found with id : " + id));
+              -> new NoSuchElementException(
+                      "No BidList found with id : " + id));
     }
 
-    public BidListEntity add(BidListEntity bidListEntity) {
+    /**
+     * add bidList.
+     * @param bidListEntity bidList to add
+     * @return bidList added
+     */
+    public BidListEntity add(final BidListEntity bidListEntity) {
         return bidListRepository.save(bidListEntity);
     }
 
-    public BidListEntity update(BidListEntity newBidListEntity) {
-        BidListEntity oldBidListEntity = findById(newBidListEntity.getBidListId());
+    /**
+     * Update bidList account, type and quantity.
+     * @param newBidListEntity bidList to update
+     * @return bidList updated
+     */
+    public BidListEntity update(final BidListEntity newBidListEntity) {
+        BidListEntity oldBidListEntity =
+                findById(newBidListEntity.getBidListId());
         oldBidListEntity.setAccount(newBidListEntity.getAccount());
         oldBidListEntity.setType(newBidListEntity.getType());
         oldBidListEntity.setBidQuantity(newBidListEntity.getBidQuantity());
         return bidListRepository.save(oldBidListEntity);
     }
 
-    public void delete(Integer id) {
+    /**
+     * Delete a bidList.
+     * @param id bideList id
+     */
+    public void delete(final Integer id) {
         BidListEntity bidListEntity = findById(id);
         bidListRepository.delete(bidListEntity);
     }

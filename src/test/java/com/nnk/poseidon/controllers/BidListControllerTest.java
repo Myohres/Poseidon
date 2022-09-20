@@ -3,6 +3,7 @@ package com.nnk.poseidon.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nnk.poseidon.domain.BidListEntity;
 import com.nnk.poseidon.service.BidListService;
+import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,12 +17,18 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockServletContext;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.servlet.ServletContext;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
@@ -34,12 +41,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-@RunWith(SpringRunner.class)
+
 @SpringBootTest
 @AutoConfigureMockMvc
-@ExtendWith(MockitoExtension.class)
+
 class BidListControllerTest {
 
+    /*@Autowired
+    private WebApplicationContext context;*/
 
     @Autowired
     private MockMvc mockMvc;
@@ -51,6 +60,10 @@ class BidListControllerTest {
 
     @BeforeEach
     void setUp() {
+       /* mockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .build();*/
+
         bidListEntity = new BidListEntity();
         bidListEntity.setBidListId(1);
         bidListEntity.setAccount("account");
@@ -62,13 +75,16 @@ class BidListControllerTest {
     void tearDown() {
     }
 
+
     @Test
+    @WithMockUser(username="admin",authorities={"ADMIN"})
     void home() throws Exception {
         mockMvc.perform(get("/bidList/list"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("bidList/list"))
                 .andExpect(model().attributeExists("List"));
     }
+
 
     @Test
     void addBidForm() throws Exception {
@@ -78,14 +94,16 @@ class BidListControllerTest {
     }
 
     @Test
+
     void validateWithNoError() throws Exception {
         mockMvc.perform(post("/bidList/validate")
                 .param("account","aa")
                 .param("type", "tt")
-                .param("bidQuantity", "1d"))
+                .param("bidQuantity", "1.0"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", "/bidList/list"));
     }
+
 
     @Test
     void validateWithError() throws Exception {
@@ -96,14 +114,16 @@ class BidListControllerTest {
                 .andExpect(view().name("bidList/add"));
     }
 
+
     @Test
     void showUpdateForm() throws Exception {
         when(bidListService.findById(1)).thenReturn(bidListEntity);
         mockMvc.perform(get("/bidList/update/1"))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("bidList"))
+                .andExpect(model().attributeExists("bidListEntity"))
                 .andExpect(view().name("bidList/update"));
     }
+
 
     @Test
     void showUpdateFormWithNoBidFound() throws Exception {
@@ -113,9 +133,10 @@ class BidListControllerTest {
                 .andExpect(header().string("Location", "/bidList/list"));
     }
 
+
     @Test
     void updateBidWithNoError() throws Exception {
-        when((bidListService.add(bidListEntity))).thenReturn(bidListEntity);
+        when((bidListService.update(bidListEntity))).thenReturn(bidListEntity);
         mockMvc.perform(post("/bidList/update/1")
                 .param("account","aa")
                 .param("type", "tt")
@@ -132,6 +153,7 @@ class BidListControllerTest {
                 .param("bidQuantity", "1d"))
                 .andExpect(view().name("bidList/update"));
     }
+
 
     @Test
     void deleteBid() throws Exception {
@@ -198,7 +220,7 @@ class BidListControllerTest {
 
     @Test
     void testDeleteBidList() throws Exception {
-        when(bidListService.findById(any())).thenReturn(bidListEntity);
+        when(bidListService.findById(1)).thenReturn(bidListEntity);
         mockMvc.perform(delete("/bidList/bidListId/1"))
                 .andExpect(status().isOk());
     }

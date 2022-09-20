@@ -14,6 +14,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -32,6 +34,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class RuleNameControllerTest {
 
     @Autowired
+    private WebApplicationContext context;
+
     private MockMvc mockMvc;
 
     @MockBean
@@ -41,6 +45,10 @@ class RuleNameControllerTest {
 
     @BeforeEach
     void setUp() {
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .build();
+
         ruleName = new RuleNameEntity();
         ruleName.setId(1);
         ruleName.setName("name");
@@ -81,14 +89,14 @@ class RuleNameControllerTest {
 
     @Test
     void validateWithError() throws Exception {
-       /* mockMvc.perform(post("/ruleName/validate")
-                .param("name"," ")
+        mockMvc.perform(post("/ruleName/validate")
+                .param("name","")
                 .param("description", "dd")
                 .param("json", "jj")
                 .param("template", "tt")
                 .param("sqlStr", "ss")
                 .param("sqlPart", "sp"))
-                .andExpect(view().name("ruleName/add"));*/
+                .andExpect(view().name("ruleName/add"));
     }
 
     @Test
@@ -110,23 +118,26 @@ class RuleNameControllerTest {
 
     @Test
     void updateBidWithError() throws Exception {
-       /* mockMvc.perform(post("/ruleName/update/1")
-                .param("name","")
-                .param("description", "dd")
-                .param("json", "jj")
+        mockMvc.perform(post("/ruleName/update/1")
+                .param("name"," ")
+                .param("description", " ")
+                .param("json", "")
                 .param("template", "tt")
                 .param("sqlStr", "ss")
                 .param("sqlPart", "sp"))
-                .andExpect(view().name("ruleName/update"));*/
+                .andExpect(view().name("ruleName/update"));
     }
 
     @Test
     void updateRuleNameWithNoError() throws Exception {
-        when((ruleNameService.add(ruleName))).thenReturn(ruleName);
+        when((ruleNameService.update(ruleName))).thenReturn(ruleName);
         mockMvc.perform(post("/ruleName/update/1")
-                .param("account","aa")
-                .param("type", "tt")
-                .param("bidQuantity", "1d"))
+                .param("name","name")
+                .param("description", "description")
+                .param("json", "json")
+                .param("template", "template")
+                .param("sqlStr", "ss")
+                .param("sqlPart", "sp"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", "/ruleName/list"));
     }

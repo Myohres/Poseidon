@@ -8,7 +8,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -135,7 +142,8 @@ public class RatingController {
      * @return rating
      */
     @GetMapping("/rating/ratingId/{id}")
-    public ResponseEntity<RatingEntity> getRatingById(@PathVariable("id") final Integer ratingId) {
+    public ResponseEntity<RatingEntity> getRatingById(
+            @PathVariable("id") final Integer ratingId) {
         log.info("GET/rating/ratingId/" + ratingId);
         try {
             return ResponseEntity.ok(ratingService.findById(ratingId));
@@ -151,7 +159,8 @@ public class RatingController {
      * @return rating added
      */
     @PostMapping("/rating/add")
-    public ResponseEntity<RatingEntity> addRating(@RequestBody final RatingEntity ratingEntity) {
+    public ResponseEntity<RatingEntity> addRating(
+            @RequestBody final RatingEntity ratingEntity) {
         log.info("POST/rating/add");
         try {
             return ResponseEntity.ok(ratingService.add(ratingEntity));
@@ -168,7 +177,7 @@ public class RatingController {
      */
     @PutMapping("/rating")
     public ResponseEntity<RatingEntity> updateRating(
-            @RequestBody RatingEntity ratingEntity) {
+            @RequestBody final RatingEntity ratingEntity) {
         log.info("PUT/rating/ratingId/ " + ratingEntity.getId());
         try {
             return ResponseEntity.ok(ratingService.update(ratingEntity));
@@ -184,7 +193,8 @@ public class RatingController {
      * @return rating deleted
      */
     @DeleteMapping("/rating/ratingId/{id}")
-    public ResponseEntity<?> deleteRating(@PathVariable("id") final Integer ratingId) {
+    public ResponseEntity<?> deleteRating(
+            @PathVariable("id") final Integer ratingId) {
         log.info("DEL/rating/ratingId/" + ratingId);
         try {
             ratingService.delete(ratingId);

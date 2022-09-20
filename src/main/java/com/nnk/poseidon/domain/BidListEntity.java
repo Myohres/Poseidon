@@ -3,13 +3,16 @@ package com.nnk.poseidon.domain;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.Date;
-import java.util.Calendar;
 
 
 @Entity
@@ -49,34 +52,6 @@ public class BidListEntity {
     private String side;
 
     public BidListEntity() {
-    }
-
-    public BidListEntity(String account, String type, Double bidQuantity) {
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, 1);
-        Date Date = new Date(cal.getTime().getTime());
-
-        this.account = account;
-        this.type = type;
-        this.bidQuantity = bidQuantity;
-        this.askQuantity = 0d;
-        this.bid = 0d;
-        this.ask = 0d;
-        this.benchmark = "defaultValue";
-        this.bidListDate = Date;
-        this.commentary = "defaultValue";
-        this.security = "defaultValue";
-        this.status = "defaultValue";
-        this.trader = "defaultValue";
-        this.book = "defaultValue";
-        this.creationName = "defaultValue";
-        this.creationDate = Date;
-        this.revisionName = "defaultValue";
-        this.revisionDate = Date;
-        this.dealName = "defaultValue";
-        this.dealType = "defaultValue";
-        this.sourceListId = "defaultValue";
-        this.side = "defaultValue";
     }
 
 }

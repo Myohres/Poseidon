@@ -6,7 +6,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 
@@ -42,7 +49,7 @@ public class RuleNameController {
      * @return adding page
      */
     @GetMapping("/ruleName/add")
-    public String addRuleForm(RuleNameEntity ruleNameEntity) {
+    public String addRuleForm(final RuleNameEntity ruleNameEntity) {
         return "ruleName/add";
     }
 
@@ -95,7 +102,8 @@ public class RuleNameController {
     @PostMapping("/ruleName/update/{id}")
     public String updateRuleName(@PathVariable("id") final Integer id,
                                  @Valid final RuleNameEntity ruleName,
-                                 final BindingResult result, final Model model) {
+                                 final BindingResult result,
+                                 final Model model) {
         if (result.hasErrors()) {
             return "ruleName/update";
         }
@@ -135,7 +143,8 @@ public class RuleNameController {
      * @return ruleName
      */
     @GetMapping("/ruleName/ruleNameId/{id}")
-    public ResponseEntity<RuleNameEntity> getRuleNameById(@PathVariable("id") final Integer ruleNameId) {
+    public ResponseEntity<RuleNameEntity> getRuleNameById(
+            @PathVariable("id") final Integer ruleNameId) {
         log.info("GET/ruleName/ruleNameId/" + ruleNameId);
         try {
             return ResponseEntity.ok(ruleNameService.findById(ruleNameId));
@@ -151,7 +160,8 @@ public class RuleNameController {
      * @return ruleName added
      */
     @PostMapping("/ruleName/add")
-    public ResponseEntity<RuleNameEntity> addRuleName(@RequestBody final RuleNameEntity ruleNameEntity) {
+    public ResponseEntity<RuleNameEntity> addRuleName(
+            @RequestBody final RuleNameEntity ruleNameEntity) {
         log.info("POST/ruleName/add");
         try {
             return ResponseEntity.ok(ruleNameService.add(ruleNameEntity));
@@ -168,7 +178,7 @@ public class RuleNameController {
      */
     @PutMapping("/ruleName")
     public ResponseEntity<RuleNameEntity> updateRuleName(
-            @RequestBody RuleNameEntity ruleNameEntity) {
+            @RequestBody final RuleNameEntity ruleNameEntity) {
         log.info("PUT/ruleName/ruleNameId/ " + ruleNameEntity.getId());
         try {
             return ResponseEntity.ok(ruleNameService.update(ruleNameEntity));
@@ -184,7 +194,8 @@ public class RuleNameController {
      * @return ruleName deleted
      */
     @DeleteMapping("/ruleName/ruleNameId/{id}")
-    public ResponseEntity<?> deleteRuleName(@PathVariable("id") final Integer ruleNameId) {
+    public ResponseEntity<?> deleteRuleName(
+            @PathVariable("id") final Integer ruleNameId) {
         log.info("DEL/ruleName/ruleNameId/" + ruleNameId);
         try {
             ruleNameService.delete(ruleNameId);

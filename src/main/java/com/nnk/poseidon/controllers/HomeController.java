@@ -5,17 +5,24 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-public class HomeController
-{
+public class HomeController {
+    /**
+     * Get home page.
+     * @param model model
+     * @return home page html
+     */
     @RequestMapping("/")
-    public String home(Model model)
-    {
+    public String home(final Model model) {
         return "home";
     }
 
+    /**
+     * Get admin home page.
+     * @param model model
+     * @return adminHome page html
+     */
     @RequestMapping("/admin/home")
-    public String adminHome(Model model)
-    {
+    public String adminHome(final Model model) {
         return "redirect:/bidList/list";
     }
 
