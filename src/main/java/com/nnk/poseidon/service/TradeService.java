@@ -32,7 +32,7 @@ public class TradeService {
      */
     public TradeEntity findById(final Integer id) {
         return  tradeRepository.findById(id).orElseThrow(()
-                -> new NoSuchElementException("No Trade found with id : " + id));
+                -> new NoSuchElementException("No Trade found with id :" + id));
     }
 
     /**

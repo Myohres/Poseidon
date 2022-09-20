@@ -12,8 +12,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -24,13 +29,15 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(SpringRunner.class)
+/*@RunWith(SpringJUnit4ClassRunner.class)*/
 @SpringBootTest
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
 
     @Autowired
+    private WebApplicationContext context;
+
     private MockMvc mockMvc;
 
     @MockBean
@@ -40,15 +47,21 @@ class UserControllerTest {
 
     @BeforeEach
     void setUp() {
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .build();
+
         userEntity = new UserEntity();
         userEntity.setId(1);
         userEntity.setUsername("userName");
-        userEntity.setFullname("fullName");
-        userEntity.setPassword("password");
+        userEntity.setFullname("fullName@h");
+        userEntity.setPassword("aaaaaaaaA8@");
         userEntity.setRole("role");
     }
 
+
     @Test
+    @WithMockUser(username="admin",authorities={"ADMIN"})
     void home() throws Exception {
         mockMvc.perform(get("/user/list"))
                 .andExpect(status().isOk())
@@ -57,6 +70,15 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username="admin",authorities={"USER"})
+    void homeWithUser() throws Exception {
+        mockMvc.perform(get("/user/list"))
+                .andExpect(status().isForbidden())
+                .andExpect(view().name("user/list"));
+    }
+
+        @Test
+
     void addUser() throws Exception {
         mockMvc.perform(get("/user/add"))
                 .andExpect(status().isOk())
@@ -64,10 +86,11 @@ class UserControllerTest {
     }
 
     @Test
+
     void validateWithNoError() throws Exception {
         mockMvc.perform(post("/user/validate")
                 .param("username","uu")
-                .param("password", "pp")
+                .param("password", "aaaaa@6A")
                 .param("fullname", "ff")
                 .param("role", "admin"))
                 .andExpect(status().is3xxRedirection())
@@ -75,16 +98,18 @@ class UserControllerTest {
     }
 
     @Test
+
     void validateWithError() throws Exception {
-       /* mockMvc.perform(post("/user/validate")
+        mockMvc.perform(post("/user/validate")
                 .param("username"," ")
                 .param("password", "")
                 .param("fullname", "")
                 .param("role", ""))
-                .andExpect(view().name("user/add"));*/
+                .andExpect(view().name("user/add"));
     }
 
     @Test
+
     void showUpdateForm() throws Exception {
         when(userService.findById(1)).thenReturn(userEntity);
         mockMvc.perform(get("/user/update/1"))
@@ -94,6 +119,7 @@ class UserControllerTest {
     }
 
     @Test
+
     void showUpdateFormWithNoUserFound() throws Exception {
         doThrow(new NoSuchElementException()).when(userService).findById(any());
         mockMvc.perform(get("/user/update/1"))
@@ -102,11 +128,12 @@ class UserControllerTest {
     }
 
     @Test
+
     void updateUserWithNoError() throws Exception {
         when((userService.save(userEntity))).thenReturn(userEntity);
         mockMvc.perform(post("/user/update/1")
                 .param("username","uu")
-                .param("password", "pp")
+                .param("password", "aaaaaaaaA8@")
                 .param("fullname", "ff")
                 .param("role", "admin"))
                 .andExpect(status().is3xxRedirection())
@@ -114,16 +141,18 @@ class UserControllerTest {
     }
 
     @Test
+
     void updateBidWithError() throws Exception {
-       /* mockMvc.perform(post("/user/update/1")
+        mockMvc.perform(post("/user/update/1")
                 .param("username"," ")
                 .param("password", "")
                 .param("fullname", "")
                 .param("role", ""))
-                .andExpect(view().name("user/update"));*/
+                .andExpect(view().name("user/update"));
     }
 
     @Test
+
     void deleteUser() throws Exception {
         when(userService.findById(any())).thenReturn(userEntity);
         when(userService.findAll()).thenReturn(new ArrayList<>());
@@ -133,6 +162,7 @@ class UserControllerTest {
     }
 
     @Test
+
     void getAllUser() throws Exception {
         when(userService.findAll()).thenReturn(new ArrayList<>());
         mockMvc.perform(get("/user/"))
@@ -140,6 +170,7 @@ class UserControllerTest {
     }
 
     @Test
+
     void getUserById() throws Exception {
         when(userService.findById(any())).thenReturn(new UserEntity());
         mockMvc.perform(get("/user/userId/1"))
@@ -147,6 +178,7 @@ class UserControllerTest {
     }
 
     @Test
+
     void getUserByIdNotFound() throws Exception {
         when(userService.findById(any())).thenThrow(new NoSuchElementException());
         mockMvc.perform(get("/user/userId/1"))
@@ -154,6 +186,7 @@ class UserControllerTest {
     }
 
     @Test
+
     void adduser() throws Exception {
         mockMvc.perform(post("/user/add")
                 .contentType(MediaType.APPLICATION_JSON).content("{}"))
@@ -161,6 +194,7 @@ class UserControllerTest {
     }
 
     @Test
+
     void adduserNotFound() throws Exception {
         when(userService.save(any())).thenThrow(new NoSuchElementException());
         mockMvc.perform(post("/user/add")
@@ -169,6 +203,7 @@ class UserControllerTest {
     }
 
     @Test
+
     void updateUser() throws Exception {
         when(userService.update(any())).thenReturn(userEntity);
         mockMvc.perform(put("/user")
@@ -177,6 +212,7 @@ class UserControllerTest {
     }
 
     @Test
+
     void updateUserNotFound() throws Exception {
         when(userService.update(any())).thenThrow(new NoSuchElementException());
         mockMvc.perform(put("/user")
@@ -185,12 +221,14 @@ class UserControllerTest {
     }
 
     @Test
+
     void testDeleteUser() throws Exception {
         mockMvc.perform(delete("/user/userId/1"))
                 .andExpect(status().isOk());
     }
 
     @Test
+
     public void deleteuserByIdTestuserNotFound() throws Exception {
        doThrow(new NoSuchElementException()).when(userService).delete(1);
         mockMvc.perform(delete("/user/userId/1"))

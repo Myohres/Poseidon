@@ -3,7 +3,11 @@ package com.nnk.poseidon.domain;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Id;
+import javax.persistence.GenerationType;
+import javax.persistence.GeneratedValue;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
@@ -17,11 +21,11 @@ public class TradeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer tradeId;
-    @NotBlank(message= "Account is mandatory")
+    @NotBlank(message = "Account is mandatory")
     private String account;
-    @NotBlank(message= "Type is mandatory")
+    @NotBlank(message = "Type is mandatory")
     private String type;
-    @NotNull(message= "Buy Quantity is mandatory")
+    @NotNull(message = "Buy Quantity is mandatory")
     private Double buyQuantity;
     private Double sellQuantity;
     private Double buyPrice;

@@ -36,6 +36,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TradeControllerTest {
 
     @Autowired
+    private WebApplicationContext context;
+
     private MockMvc mockMvc;
 
     @MockBean
@@ -45,6 +47,10 @@ class TradeControllerTest {
 
     @BeforeEach
     void setUp() {
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .build();
+
         trade = new TradeEntity();
         trade.setTradeId(1);
         trade.setAccount("account");
@@ -98,7 +104,7 @@ class TradeControllerTest {
         mockMvc.perform(post("/trade/validate")
                 .param("account","")
                 .param("type", "")
-                .param("buyQuantity", " j"))
+                .param("buyQuantity", " 1"))
                 .andExpect(view().name("trade/add"));
     }
 
@@ -132,11 +138,11 @@ class TradeControllerTest {
 
     @Test
     void updateBidWithError() throws Exception {
-      /*  mockMvc.perform(post("/trade/update/1")
+        mockMvc.perform(post("/trade/update/1")
                 .param("account"," ")
                 .param("type", "tt")
                 .param("buyQuantity", ""))
-                .andExpect(view().name("trade/update"));*/
+                .andExpect(view().name("trade/update"));
     }
 
     @Test
