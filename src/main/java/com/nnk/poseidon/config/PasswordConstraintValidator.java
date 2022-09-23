@@ -1,26 +1,30 @@
-package com.nnk.poseidon.security;
+package com.nnk.poseidon.config;
 
-import org.hibernate.persister.entity.Joinable;
-import org.passay.*;
+import org.passay.PasswordValidator;
+import org.passay.LengthRule;
+import org.passay.UppercaseCharacterRule;
+import org.passay.DigitCharacterRule;
+import org.passay.SpecialCharacterRule;
+import org.passay.RuleResult;
+import org.passay.PasswordData;
 
 
-import javax.persistence.criteria.Join;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.Arrays;
 import java.util.List;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
-public class PasswordConstraintValidator implements ConstraintValidator<ValidPassword, String> {
+public class PasswordConstraintValidator
+        implements ConstraintValidator<ValidPassword, String> {
    @Override
-    public void initialize(ValidPassword arg0) {
+    public void initialize(final ValidPassword arg0) {
     }
 
     @Override
-    public boolean isValid(String password, ConstraintValidatorContext context) {
+    public boolean isValid(final String password,
+                          final ConstraintValidatorContext context) {
         PasswordValidator validator = new PasswordValidator(Arrays.asList(
-                new LengthRule(8,80),
+                new LengthRule(8, 80),
                 new UppercaseCharacterRule(1),
                 new DigitCharacterRule(1),
                 new SpecialCharacterRule(1)));

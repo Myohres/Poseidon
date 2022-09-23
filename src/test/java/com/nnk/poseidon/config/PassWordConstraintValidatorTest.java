@@ -1,4 +1,4 @@
-package com.nnk.poseidon.security;
+package com.nnk.poseidon.config;
 
 import com.nnk.poseidon.domain.UserEntity;
 

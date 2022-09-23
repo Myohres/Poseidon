@@ -1,4 +1,4 @@
-package com.nnk.poseidon.security;
+package com.nnk.poseidon.config;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
