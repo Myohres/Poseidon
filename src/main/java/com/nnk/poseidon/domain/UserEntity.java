@@ -1,7 +1,7 @@
 package com.nnk.poseidon.domain;
 
 
-import com.nnk.poseidon.security.ValidPassword;
+import com.nnk.poseidon.config.ValidPassword;
 import lombok.Getter;
 import lombok.Setter;
 
