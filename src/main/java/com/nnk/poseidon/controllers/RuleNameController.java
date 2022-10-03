@@ -39,6 +39,7 @@ public class RuleNameController {
      */
     @RequestMapping("/ruleName/list")
     public String home(final Model model) {
+        log.info("GET/ruleName/list");
         model.addAttribute("list", ruleNameService.findAll());
         return "ruleName/list";
     }
@@ -50,6 +51,7 @@ public class RuleNameController {
      */
     @GetMapping("/ruleName/add")
     public String addRuleForm(final RuleNameEntity ruleNameEntity) {
+        log.info("GET/ruleName/add");
         return "ruleName/add";
     }
 
@@ -63,10 +65,13 @@ public class RuleNameController {
     @PostMapping("/ruleName/validate")
     public String validate(@Valid final RuleNameEntity ruleName,
                            final BindingResult result, final Model model) {
+        log.info("GET/ruleName/validate");
         if (result.hasErrors()) {
+            log.info("validate error");
             return "ruleName/add";
         }
         ruleNameService.add(ruleName);
+        log.info("validate success");
         model.addAttribute("list", ruleNameService.findAll());
         return "redirect:/ruleName/list";
     }
@@ -81,10 +86,11 @@ public class RuleNameController {
     public String showUpdateForm(@PathVariable("id") final Integer id,
                                  final Model model) {
        try {
+           log.info("GET/ruleName/update/" + id);
            RuleNameEntity ruleNameEntity = ruleNameService.findById(id);
            model.addAttribute("ruleNameEntity", ruleNameEntity);
        } catch (NoSuchElementException e) {
-           e.printStackTrace();
+           log.error("ruleName not found " + e.getMessage());
            model.addAttribute("list", ruleNameService.findAll());
            return "redirect:/ruleName/list";
        }
@@ -104,12 +110,15 @@ public class RuleNameController {
                                  @Valid final RuleNameEntity ruleName,
                                  final BindingResult result,
                                  final Model model) {
+        log.info("POST/ruleName/update/" + id);
         if (result.hasErrors()) {
+            log.info("update error");
             return "ruleName/update";
         }
         ruleName.setId(id);
         ruleNameService.update(ruleName);
         model.addAttribute("list", ruleNameService.findAll());
+        log.info("update success");
         return "redirect:/ruleName/list";
     }
 
@@ -122,6 +131,7 @@ public class RuleNameController {
     @GetMapping("/ruleName/delete/{id}")
     public String deleteRuleName(@PathVariable("id") final Integer id,
                                  final Model model) {
+        log.info("DEL/ruleName/delete/" + id);
         ruleNameService.delete(id);
         model.addAttribute("list", ruleNameService.findAll());
         return "redirect:/ruleName/list";

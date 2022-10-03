@@ -39,6 +39,7 @@ public class TradeController {
      */
     @RequestMapping("/trade/list")
     public String home(final Model model) {
+        log.info("GET/trade/list");
         model.addAttribute("list", tradeService.findAll());
         return "trade/list";
     }
@@ -50,6 +51,7 @@ public class TradeController {
      */
     @GetMapping("/trade/add")
     public String addUser(final TradeEntity tradeEntity) {
+        log.info("GET//trade/add");
         return "trade/add";
     }
 
@@ -63,10 +65,13 @@ public class TradeController {
     @PostMapping("/trade/validate")
     public String validate(@Valid final TradeEntity tradeEntity,
                            final BindingResult result, final Model model) {
+        log.info("GET/trade/validate");
         if (result.hasErrors()) {
+            log.info("validate error");
             return "trade/add";
         }
         tradeService.add(tradeEntity);
+        log.info("validate success");
         model.addAttribute("list", tradeService.findAll());
         return "redirect:/trade/list";
     }
@@ -80,11 +85,12 @@ public class TradeController {
     @GetMapping("/trade/update/{id}")
     public String showUpdateForm(@PathVariable("id") final Integer id,
                                  final Model model) {
+        log.info("GET/trade/update/" + id);
         try {
             TradeEntity tradeEntity = tradeService.findById(id);
             model.addAttribute("tradeEntity", tradeEntity);
         } catch (NoSuchElementException e) {
-            e.printStackTrace();
+            log.error("RuleName not found " + e.getMessage());
             model.addAttribute("list", tradeService.findAll());
             return "redirect:/trade/list";
         }
@@ -103,11 +109,14 @@ public class TradeController {
     public String updateTrade(@PathVariable("id") final Integer id,
                               @Valid final TradeEntity tradeEntity,
                              final BindingResult result, final Model model) {
+        log.info("POST/trade/update/" + id);
         if (result.hasErrors()) {
+            log.info("update error");
             return "trade/update";
         }
         tradeEntity.setTradeId(id);
         tradeService.update(tradeEntity);
+        log.info("update success");
         model.addAttribute("list", tradeService.findAll());
         return "redirect:/trade/list";
     }
@@ -121,6 +130,7 @@ public class TradeController {
     @GetMapping("/trade/delete/{id}")
     public String deleteTrade(@PathVariable("id") final Integer id,
                               final Model model) {
+        log.info("GET/trade/delete/" + id);
         tradeService.delete(id);
         model.addAttribute("list", tradeService.findAll());
         return "redirect:/trade/list";

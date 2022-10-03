@@ -40,6 +40,7 @@ public class UserController {
      */
     @RequestMapping("/user/list")
     public String home(final Model model) {
+        log.info("GET/user/list");
         model.addAttribute("users", userService.findAll());
         return "user/list";
     }
@@ -51,6 +52,7 @@ public class UserController {
      */
     @GetMapping("/user/add")
     public String addUser(final UserEntity userEntity) {
+        log.info("GET/user/add");
         return "user/add";
     }
 
@@ -64,13 +66,16 @@ public class UserController {
     @PostMapping("/user/validate")
     public String validate(@Valid final UserEntity user,
                           final BindingResult result, final Model model) {
+        log.info("POST/user/validate");
         if (!result.hasErrors()) {
            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             user.setPassword(encoder.encode(user.getPassword()));
             userService.save(user);
+            log.info("validate succes");
             model.addAttribute("users", userService.findAll());
             return "redirect:/user/list";
         }
+        log.info("validate error");
         return "user/add";
     }
 
@@ -83,12 +88,13 @@ public class UserController {
     @GetMapping("/user/update/{id}")
     public String showUpdateForm(@PathVariable("id") final Integer id,
                                  final Model model) {
+        log.info("GET/user/update/" + id);
         try {
             UserEntity user = userService.findById(id);
             user.setPassword("");
             model.addAttribute("userEntity", user);
         } catch (NoSuchElementException e) {
-            e.printStackTrace();
+            log.error("user not found " + e.getMessage());
             model.addAttribute("users", userService.findAll());
             return "redirect:/user/list";
         }
@@ -107,13 +113,16 @@ public class UserController {
     public String updateUser(@PathVariable("id") final Integer id,
                              @Valid final UserEntity user,
                             final BindingResult result, final Model model) {
+        log.info("POST/user/update/" + id);
         if (result.hasErrors()) {
+            log.info("update error");
             return "user/update";
         }
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         user.setPassword(encoder.encode(user.getPassword()));
         user.setId(id);
         userService.update(user);
+        log.info("update success");
         model.addAttribute("users", userService.findAll());
         return "redirect:/user/list";
     }
@@ -127,6 +136,7 @@ public class UserController {
     @GetMapping("/user/delete/{id}")
     public String deleteUser(@PathVariable("id") final Integer id,
                              final Model model) {
+        log.info("DEL/user/delete/" + id);
         userService.delete(id);
         model.addAttribute("users", userService.findAll());
         return "redirect:/user/list";

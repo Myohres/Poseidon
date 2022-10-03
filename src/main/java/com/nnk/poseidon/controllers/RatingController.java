@@ -39,6 +39,7 @@ public class RatingController {
      */
     @RequestMapping("/rating/list")
     public String home(final Model model) {
+        log.info("GET/rating/list");
         model.addAttribute("list", ratingService.findAll());
         return "rating/list";
     }
@@ -50,6 +51,7 @@ public class RatingController {
      */
     @GetMapping("/rating/add")
     public String addRatingForm(final RatingEntity ratingEntity) {
+        log.info("GET/rating/add");
         return "rating/add";
     }
 
@@ -63,9 +65,12 @@ public class RatingController {
     @PostMapping("/rating/validate")
     public String validate(@Valid final RatingEntity rating,
                            final BindingResult result, final Model model) {
+        log.info("GET/rating/validate");
         if (result.hasErrors()) {
+            log.info("validate error");
             return "rating/add";
         }
+        log.info("validate success");
         ratingService.add(rating);
         model.addAttribute("list", ratingService.findAll());
         return "redirect:/rating/list";
@@ -80,11 +85,12 @@ public class RatingController {
     @GetMapping("/rating/update/{id}")
     public String showUpdateForm(@PathVariable("id") final Integer id,
                                  final Model model) {
+        log.info("GET/rating/update/" + id);
         try {
             RatingEntity ratingEntity = ratingService.findById(id);
             model.addAttribute("ratingEntity", ratingEntity);
         } catch (NoSuchElementException e) {
-            e.printStackTrace();
+         log.error("Rating not found" + e.getMessage());
             model.addAttribute("list", ratingService.findAll());
             return "redirect:/rating/list";
         }
@@ -103,12 +109,15 @@ public class RatingController {
     public String updateRating(@PathVariable("id") final Integer id,
                                @Valid final RatingEntity rating,
                               final BindingResult result, final Model model) {
+        log.info("POST/rating/update/" + id);
         if (result.hasErrors()) {
+            log.info("update error");
             return "rating/update";
         }
         rating.setId(id);
         ratingService.update(rating);
         model.addAttribute("list", ratingService.findAll());
+        log.info("update success");
         return "redirect:/rating/list";
     }
 
@@ -121,6 +130,7 @@ public class RatingController {
     @GetMapping("/rating/delete/{id}")
     public String deleteRating(@PathVariable("id") final Integer id,
                                final Model model) {
+        log.info("DEL/rating/delete/" + id);
         ratingService.delete(id);
         model.addAttribute("list", ratingService.findAll());
         return "redirect:/rating/list";

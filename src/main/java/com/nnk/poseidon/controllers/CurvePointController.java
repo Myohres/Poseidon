@@ -39,6 +39,7 @@ public class CurvePointController {
      */
     @RequestMapping("/curvePoint/list")
     public String home(final Model model) {
+        log.info("GET/curvePoint/list");
         model.addAttribute("list", curvePointService.findAll());
         return "curvePoint/list";
     }
@@ -50,6 +51,7 @@ public class CurvePointController {
      */
     @GetMapping("/curvePoint/add")
     public String addCurvePointForm(final CurvePointEntity curvePointEntity) {
+        log.info("GET/curvePoint/add");
         return "curvePoint/add";
     }
 
@@ -63,10 +65,13 @@ public class CurvePointController {
     @PostMapping("/curvePoint/validate")
     public String validate(@Valid final CurvePointEntity curve,
                            final BindingResult result, final Model model) {
+        log.info("POST/curvePoint/validate");
         if (result.hasErrors()) {
+            log.info("validate error");
             return "curvePoint/add";
         }
         curvePointService.add(curve);
+        log.info("add success");
         model.addAttribute("list", curvePointService.findAll());
         return "redirect:/curvePoint/list";
     }
@@ -80,11 +85,12 @@ public class CurvePointController {
     @GetMapping("/curvePoint/update/{id}")
     public String showUpdateForm(@PathVariable("id") final Integer id,
                                  final Model model) {
+        log.info("GET/curvePoint/update/" +id);
         try {
             CurvePointEntity curvePointEntity = curvePointService.findById(id);
             model.addAttribute("curvePointEntity", curvePointEntity);
         } catch (NoSuchElementException e) {
-            e.printStackTrace();
+            log.error("CurvePoint found " + e.getMessage());
             model.addAttribute("List", curvePointService.findAll());
             return "redirect:/curvePoint/list";
         }
@@ -103,12 +109,15 @@ public class CurvePointController {
     public String updateCurvePoint(@PathVariable("id") final Integer id,
                             @Valid final CurvePointEntity curvePoint,
                             final BindingResult result, final Model model) {
+        log.info("POST/curvePoint/update/" +id);
         if (result.hasErrors()) {
+            log.info("update error");
             return "curvePoint/update";
         }
         curvePoint.setId(id);
         curvePointService.update(curvePoint);
         model.addAttribute("list", curvePointService.findAll());
+        log.info("update success");
         return "redirect:/curvePoint/list";
     }
 
@@ -121,6 +130,7 @@ public class CurvePointController {
     @GetMapping("/curvePoint/delete/{id}")
     public String deleteCurvePoint(@PathVariable("id") final Integer id,
                             final Model model) {
+        log.info("DEL/curvePoint/delete/" + id);
         curvePointService.delete(id);
         model.addAttribute("list", curvePointService.findAll());
         return "redirect:/curvePoint/list";
