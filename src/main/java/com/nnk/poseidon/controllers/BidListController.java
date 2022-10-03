@@ -38,6 +38,7 @@ public class BidListController {
      */
     @RequestMapping("/bidList/list")
     public String home(final Model model) {
+        log.info("GET/bidList/list");
         model.addAttribute("List", bidListService.findAll());
         return "bidList/list";
     }
@@ -49,6 +50,7 @@ public class BidListController {
      */
     @GetMapping("/bidList/add")
     public String addBidForm(final BidListEntity bidListEntity) {
+        log.info("GET/bidList/add");
         return "bidList/add";
     }
 
@@ -63,9 +65,12 @@ public class BidListController {
     @PostMapping("/bidList/validate")
     public String validate(@Valid final BidListEntity bidListEntity,
                            final BindingResult result, final Model model) {
+        log.info("GET/bidList/validate");
         if (result.hasErrors()) {
+            log.info("validate error");
             return "bidList/add";
         }
+        log.info("validate success");
         bidListService.add(bidListEntity);
         model.addAttribute("List", bidListService.findAll());
         return "redirect:/bidList/list";
@@ -81,11 +86,12 @@ public class BidListController {
     @GetMapping("/bidList/update/{id}")
     public String showUpdateForm(@PathVariable("id") final Integer id,
                                  final Model model) {
+        log.info("GET/bidList/update/" + id);
         try {
             BidListEntity bidListEntity = bidListService.findById(id);
             model.addAttribute("bidListEntity", bidListEntity);
         } catch (NoSuchElementException e) {
-            e.printStackTrace();
+            log.error("BidList not found " + e.getMessage());
             model.addAttribute("List", bidListService.findAll());
             return "redirect:/bidList/list";
         }
@@ -105,12 +111,15 @@ public class BidListController {
     public String updateBid(@PathVariable("id") final Integer id,
                             @Valid final BidListEntity bidList,
                             final BindingResult result, final Model model) {
+        log.info("POST/bidList/update/" + id);
         if (result.hasErrors()) {
+            log.info("update error");
             return "bidList/update";
         }
         bidList.setBidListId(id);
         bidListService.update(bidList);
         model.addAttribute("list", bidListService.findAll());
+        log.info("update success");
         return "redirect:/bidList/list";
     }
 
@@ -123,6 +132,7 @@ public class BidListController {
     @GetMapping("/bidList/delete/{id}")
     public String deleteBid(@PathVariable("id") final Integer id,
                             final Model model) {
+        log.info("DEL/bidList/delete/" + id);
         bidListService.delete(id);
         model.addAttribute("list", bidListService.findAll());
         return "redirect:/bidList/list";
