@@ -27,15 +27,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
-@AutoConfigureMockMvc
-@WithMockUser(username="admin",roles={"ADMIN"})
-@ExtendWith(MockitoExtension.class)
+@AutoConfigureMockMvc(addFilters = false)
 class CurvePointControllerTest {
-
-   /* @Autowired
-    private WebApplicationContext context;*/
 
     @Autowired
     private MockMvc mockMvc;
@@ -47,10 +41,6 @@ class CurvePointControllerTest {
 
     @BeforeEach
     void setUp() {
-      /*  mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .build();*/
-
         curvePoint = new CurvePointEntity();
         curvePoint.setCurveId(1);
         curvePoint.setTerm(1.0);

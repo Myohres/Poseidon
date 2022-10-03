@@ -28,15 +28,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
-@AutoConfigureMockMvc
-@ExtendWith(MockitoExtension.class)
+@AutoConfigureMockMvc(addFilters = false)
 class RatingControllerTest {
 
     @Autowired
-    private WebApplicationContext context;
-
     private MockMvc mockMvc;
 
     @MockBean
@@ -46,10 +42,6 @@ class RatingControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .build();
-
         rating = new RatingEntity();
         rating.setId(1);
         rating.setMoodysRating("moody");

@@ -27,15 +27,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
-@AutoConfigureMockMvc
-@ExtendWith(MockitoExtension.class)
+@AutoConfigureMockMvc(addFilters = false)
 class RuleNameControllerTest {
 
     @Autowired
-    private WebApplicationContext context;
-
     private MockMvc mockMvc;
 
     @MockBean
@@ -45,10 +41,6 @@ class RuleNameControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .build();
-
         ruleName = new RuleNameEntity();
         ruleName.setId(1);
         ruleName.setName("name");

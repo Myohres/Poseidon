@@ -19,6 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -43,12 +44,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @SpringBootTest
-@AutoConfigureMockMvc
-
+@AutoConfigureMockMvc(addFilters = false)
 class BidListControllerTest {
-
-    /*@Autowired
-    private WebApplicationContext context;*/
 
     @Autowired
     private MockMvc mockMvc;
@@ -60,10 +57,6 @@ class BidListControllerTest {
 
     @BeforeEach
     void setUp() {
-       /* mockMvc = MockMvcBuilders
-            .webAppContextSetup(context)
-            .build();*/
-
         bidListEntity = new BidListEntity();
         bidListEntity.setBidListId(1);
         bidListEntity.setAccount("account");
@@ -77,7 +70,6 @@ class BidListControllerTest {
 
 
     @Test
-    @WithMockUser(username="admin",authorities={"ADMIN"})
     void home() throws Exception {
         mockMvc.perform(get("/bidList/list"))
                 .andExpect(status().isOk())
@@ -94,7 +86,6 @@ class BidListControllerTest {
     }
 
     @Test
-
     void validateWithNoError() throws Exception {
         mockMvc.perform(post("/bidList/validate")
                 .param("account","aa")

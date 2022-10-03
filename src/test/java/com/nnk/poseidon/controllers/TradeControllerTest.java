@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -25,19 +26,17 @@ import java.util.NoSuchElementException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
-@AutoConfigureMockMvc
-@ExtendWith(MockitoExtension.class)
+@AutoConfigureMockMvc()
+@WithMockUser()
 class TradeControllerTest {
 
     @Autowired
-    private WebApplicationContext context;
-
     private MockMvc mockMvc;
 
     @MockBean
@@ -47,10 +46,6 @@ class TradeControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .build();
-
         trade = new TradeEntity();
         trade.setTradeId(1);
         trade.setAccount("account");
@@ -76,7 +71,8 @@ class TradeControllerTest {
 
     @Test
     void home() throws Exception {
-        mockMvc.perform(get("/trade/list"))
+        mockMvc.perform(get("/trade/list")
+                .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("trade/list"))
                 .andExpect(model().attributeExists("list"));
@@ -84,7 +80,8 @@ class TradeControllerTest {
 
     @Test
     void addTradeForm() throws Exception {
-        mockMvc.perform(get("/trade/add"))
+        mockMvc.perform(get("/trade/add")
+                .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("trade/add"));
     }
@@ -92,6 +89,7 @@ class TradeControllerTest {
     @Test
     void validate() throws Exception {
         mockMvc.perform(post("/trade/validate")
+                .with(csrf())
                 .param("account","aa")
                 .param("type", "tt")
                 .param("buyQuantity", "1d"))
@@ -102,6 +100,7 @@ class TradeControllerTest {
     @Test
     void validateWithError() throws Exception {
         mockMvc.perform(post("/trade/validate")
+                .with(csrf())
                 .param("account","")
                 .param("type", "")
                 .param("buyQuantity", " 1"))
@@ -111,7 +110,8 @@ class TradeControllerTest {
     @Test
     void showUpdateForm() throws Exception {
         when(tradeService.findById(1)).thenReturn(trade);
-        mockMvc.perform(get("/trade/update/1"))
+        mockMvc.perform(get("/trade/update/1")
+                .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("tradeEntity"))
                 .andExpect(view().name("trade/update"));
@@ -120,7 +120,8 @@ class TradeControllerTest {
     @Test
     void showUpdateFormWithNoTradeFound() throws Exception {
         doThrow(new NoSuchElementException()).when(tradeService).findById(any());
-        mockMvc.perform(get("/trade/update/1"))
+        mockMvc.perform(get("/trade/update/1")
+                .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", "/trade/list"));
     }
@@ -129,6 +130,7 @@ class TradeControllerTest {
     void updateCurvePoint() throws Exception {
         when((tradeService.add(trade))).thenReturn(trade);
         mockMvc.perform(post("/trade/update/1")
+                .with(csrf())
                 .param("account","aa")
                 .param("type", "tt")
                 .param("buyQuantity", "1d"))
@@ -139,6 +141,7 @@ class TradeControllerTest {
     @Test
     void updateBidWithError() throws Exception {
         mockMvc.perform(post("/trade/update/1")
+                .with(csrf())
                 .param("account"," ")
                 .param("type", "tt")
                 .param("buyQuantity", ""))
@@ -149,7 +152,8 @@ class TradeControllerTest {
     void deleteTrade() throws Exception {
         when(tradeService.findById(any())).thenReturn(trade);
         when(tradeService.findAll()).thenReturn(new ArrayList<>());
-        mockMvc.perform(get("/trade/delete/13"))
+        mockMvc.perform(get("/trade/delete/13")
+                .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", "/trade/list"));
     }
@@ -157,7 +161,8 @@ class TradeControllerTest {
     @Test
     void getAllTrade() throws Exception {
         when(tradeService.findAll()).thenReturn(new ArrayList<>());
-        mockMvc.perform(get("/trade"))
+        mockMvc.perform(get("/trade")
+                .with(csrf()))
                 .andExpect(status().isOk());
     }
 
@@ -165,7 +170,8 @@ class TradeControllerTest {
     @Test
     void getTradeById() throws Exception {
         when(tradeService.findById(any())).thenReturn(trade);
-        mockMvc.perform(get("/trade/tradeId/1"))
+        mockMvc.perform(get("/trade/tradeId/1")
+                .with(csrf()))
                 .andExpect(status().isOk());
 
     }
@@ -173,13 +179,15 @@ class TradeControllerTest {
     @Test
     void getTradeByIdNotFound() throws Exception {
         when(tradeService.findById(any())).thenThrow(new NoSuchElementException());
-        mockMvc.perform(get("/trade/tradeId/1"))
+        mockMvc.perform(get("/trade/tradeId/1")
+                .with(csrf()))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void addTrade() throws Exception {
         mockMvc.perform(post("/trade/add")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON).content("{}"))
                 .andExpect(status().isOk());
     }
@@ -188,6 +196,7 @@ class TradeControllerTest {
     void addTradeNotFound() throws Exception {
         when(tradeService.add(any())).thenThrow(new NoSuchElementException());
         mockMvc.perform(post("/trade/add")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON).content("{}"))
                 .andExpect(status().isNotFound());
     }
@@ -196,6 +205,7 @@ class TradeControllerTest {
     void updateTrade() throws Exception {
         when(tradeService.update(any())).thenReturn(trade);
         mockMvc.perform(put("/trade")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON).content("{}"))
                 .andExpect(status().isOk());
     }
@@ -204,6 +214,7 @@ class TradeControllerTest {
     void updateTradeNotFound() throws Exception {
         when(tradeService.update(any())).thenThrow(new NoSuchElementException());
         mockMvc.perform(put("/trade")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON).content("{}"))
                 .andExpect(status().isNotFound());
     }
@@ -211,14 +222,16 @@ class TradeControllerTest {
     @Test
     void testDeleteTrade() throws Exception {
         when(tradeService.findById(any())).thenReturn(trade);
-       mockMvc.perform(delete("/trade/tradeId/1"))
+        mockMvc.perform(delete("/trade/tradeId/1")
+                .with(csrf()))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void testDeleteTradeNotFound() throws Exception {
         doThrow(new NoSuchElementException()).when(tradeService).delete(1);
-        mockMvc.perform(delete("/trade/tradeId/1"))
+        mockMvc.perform(delete("/trade/tradeId/1")
+                .with(csrf()))
                 .andExpect(status().isNotFound());
     }
 

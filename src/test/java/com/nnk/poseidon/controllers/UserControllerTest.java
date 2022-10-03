@@ -4,21 +4,13 @@ import com.nnk.poseidon.domain.UserEntity;
 import com.nnk.poseidon.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -28,16 +20,15 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 
-/*@RunWith(SpringJUnit4ClassRunner.class)*/
 @SpringBootTest
 @AutoConfigureMockMvc
-@ExtendWith(MockitoExtension.class)
+@WithMockUser(username = "admin", authorities = "ADMIN")
 class UserControllerTest {
 
-    @Autowired
-    private WebApplicationContext context;
 
+@Autowired
     private MockMvc mockMvc;
 
     @MockBean
@@ -47,10 +38,6 @@ class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .build();
-
         userEntity = new UserEntity();
         userEntity.setId(1);
         userEntity.setUsername("userName");
@@ -59,36 +46,27 @@ class UserControllerTest {
         userEntity.setRole("role");
     }
 
-
     @Test
-    @WithMockUser(username="admin",authorities={"ADMIN"})
     void home() throws Exception {
-        mockMvc.perform(get("/user/list"))
+        mockMvc.perform(get("/user/list")
+                .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("user/list"))
                 .andExpect(model().attributeExists("users"));
     }
 
     @Test
-    @WithMockUser(username="admin",authorities={"USER"})
-    void homeWithUser() throws Exception {
-        mockMvc.perform(get("/user/list"))
-                .andExpect(status().isForbidden())
-                .andExpect(view().name("user/list"));
-    }
-
-        @Test
-
     void addUser() throws Exception {
-        mockMvc.perform(get("/user/add"))
+        mockMvc.perform(get("/user/add")
+                .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("user/add"));
     }
 
     @Test
-
     void validateWithNoError() throws Exception {
         mockMvc.perform(post("/user/validate")
+                .with(csrf())
                 .param("username","uu")
                 .param("password", "aaaaa@6A")
                 .param("fullname", "ff")
@@ -101,6 +79,7 @@ class UserControllerTest {
 
     void validateWithError() throws Exception {
         mockMvc.perform(post("/user/validate")
+                .with(csrf())
                 .param("username"," ")
                 .param("password", "")
                 .param("fullname", "")
@@ -112,7 +91,8 @@ class UserControllerTest {
 
     void showUpdateForm() throws Exception {
         when(userService.findById(1)).thenReturn(userEntity);
-        mockMvc.perform(get("/user/update/1"))
+        mockMvc.perform(get("/user/update/1")
+                .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("userEntity"))
                 .andExpect(view().name("user/update"));
@@ -122,7 +102,8 @@ class UserControllerTest {
 
     void showUpdateFormWithNoUserFound() throws Exception {
         doThrow(new NoSuchElementException()).when(userService).findById(any());
-        mockMvc.perform(get("/user/update/1"))
+        mockMvc.perform(get("/user/update/1")
+                .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", "/user/list"));
     }
@@ -132,6 +113,7 @@ class UserControllerTest {
     void updateUserWithNoError() throws Exception {
         when((userService.save(userEntity))).thenReturn(userEntity);
         mockMvc.perform(post("/user/update/1")
+                .with(csrf())
                 .param("username","uu")
                 .param("password", "aaaaaaaaA8@")
                 .param("fullname", "ff")
@@ -144,6 +126,7 @@ class UserControllerTest {
 
     void updateBidWithError() throws Exception {
         mockMvc.perform(post("/user/update/1")
+                .with(csrf())
                 .param("username"," ")
                 .param("password", "")
                 .param("fullname", "")
@@ -156,7 +139,8 @@ class UserControllerTest {
     void deleteUser() throws Exception {
         when(userService.findById(any())).thenReturn(userEntity);
         when(userService.findAll()).thenReturn(new ArrayList<>());
-        mockMvc.perform(get("/user/delete/13"))
+        mockMvc.perform(get("/user/delete/13")
+                .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", "/user/list"));
     }
@@ -165,7 +149,8 @@ class UserControllerTest {
 
     void getAllUser() throws Exception {
         when(userService.findAll()).thenReturn(new ArrayList<>());
-        mockMvc.perform(get("/user/"))
+        mockMvc.perform(get("/user/")
+                .with(csrf()))
                 .andExpect(status().isOk());
     }
 
@@ -173,7 +158,8 @@ class UserControllerTest {
 
     void getUserById() throws Exception {
         when(userService.findById(any())).thenReturn(new UserEntity());
-        mockMvc.perform(get("/user/userId/1"))
+        mockMvc.perform(get("/user/userId/1")
+                .with(csrf()))
                 .andExpect(status().isOk());
     }
 
@@ -181,7 +167,8 @@ class UserControllerTest {
 
     void getUserByIdNotFound() throws Exception {
         when(userService.findById(any())).thenThrow(new NoSuchElementException());
-        mockMvc.perform(get("/user/userId/1"))
+        mockMvc.perform(get("/user/userId/1")
+                .with(csrf()))
                 .andExpect(status().isNotFound());
     }
 
@@ -189,6 +176,7 @@ class UserControllerTest {
 
     void adduser() throws Exception {
         mockMvc.perform(post("/user/add")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON).content("{}"))
                 .andExpect(status().isOk());
     }
@@ -198,6 +186,7 @@ class UserControllerTest {
     void adduserNotFound() throws Exception {
         when(userService.save(any())).thenThrow(new NoSuchElementException());
         mockMvc.perform(post("/user/add")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON).content("{}"))
                 .andExpect(status().isNotFound());
     }
@@ -207,6 +196,7 @@ class UserControllerTest {
     void updateUser() throws Exception {
         when(userService.update(any())).thenReturn(userEntity);
         mockMvc.perform(put("/user")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON).content("{}"))
                 .andExpect(status().isOk());
     }
@@ -216,6 +206,7 @@ class UserControllerTest {
     void updateUserNotFound() throws Exception {
         when(userService.update(any())).thenThrow(new NoSuchElementException());
         mockMvc.perform(put("/user")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON).content("{}"))
                 .andExpect(status().isNotFound());
     }
@@ -223,7 +214,8 @@ class UserControllerTest {
     @Test
 
     void testDeleteUser() throws Exception {
-        mockMvc.perform(delete("/user/userId/1"))
+        mockMvc.perform(delete("/user/userId/1")
+                .with(csrf()))
                 .andExpect(status().isOk());
     }
 
@@ -231,7 +223,8 @@ class UserControllerTest {
 
     public void deleteuserByIdTestuserNotFound() throws Exception {
        doThrow(new NoSuchElementException()).when(userService).delete(1);
-        mockMvc.perform(delete("/user/userId/1"))
+        mockMvc.perform(delete("/user/userId/1")
+                .with(csrf()))
                 .andExpect(status().isNotFound());
     }
 }

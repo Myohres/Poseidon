@@ -82,7 +82,7 @@ class UserServiceTest {
         assertEquals("userName", user.getUsername());
         assertEquals("fullName", user.getFullname());
         assertEquals("password2", user.getPassword());
-        assertEquals("role", user.getRole());
+        assertEquals("role2", user.getRole());
     }
 
     @Test
