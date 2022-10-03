@@ -1,4 +1,4 @@
-package com.nnk.poseidon.security;
+package com.nnk.poseidon.config;
 
 import com.nnk.poseidon.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,13 +9,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
 
     @Autowired
     UserService userService;
@@ -29,23 +30,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers(("/")).permitAll()
-                .antMatchers("/login*").permitAll()
-                .antMatchers(("/user/**")).hasRole("ADMIN")
+                .antMatchers("/").permitAll()
+                .antMatchers("/user/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
                 .and().formLogin()
-                    .loginProcessingUrl("/perform_login")
-                    .defaultSuccessUrl("/bidList/list",false)
-                    .failureUrl("/login.html?error=true")
+                .defaultSuccessUrl("/bidList/list", true)
                 .and().oauth2Login()
-                   /* .loginProcessingUrl("/perform_login")
-                   /* .defaultSuccessUrl("/bidList/list",false)*/
+                .defaultSuccessUrl("/bidList/list",true)
                 .and().logout()
-                   .logoutUrl("/app-logout")
-                    .logoutSuccessUrl("/login")
-                    .invalidateHttpSession(true)
-                    .deleteCookies("JSESSIONID")
-                    ;
+                    .logoutUrl("/app-logout")
+                    .logoutSuccessUrl("/")
+                    .invalidateHttpSession(true);
     }
 
     @Bean
